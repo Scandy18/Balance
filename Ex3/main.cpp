@@ -8,7 +8,7 @@ Camera camera = Camera(Vector3d(0, -4, 4), Vector3d(-5 * PI / 8, 0, 1));
 Vector3d camera_move_offset = Vector3d(0, 0, 0);
 Vector3d camera_rotate_offset = Vector3d(0, 0, 0);
 float moving_speed = 0.01f;
-float rotation_sensitity = 0.01f;
+float rotation_sensitity = 0.003f;
 
 int wHeight = 0;
 int wWidth = 0;
@@ -99,20 +99,20 @@ void key(unsigned char k, int x, int y)
 	case 27:
 	case 'q': {exit(0); break; }
 
-	case 'a': {
-		camera_move_offset += Vector3d(0, -moving_speed, 0);
-		break;
-	}
 	case 'd': {
-		camera_move_offset += Vector3d(0, moving_speed, 0);
+		camera_move_offset += Vector3d(-moving_speed * sinf(camera.rotation.y), moving_speed, 0);
 		break;
 	}
-	case 'w': {
-		camera_move_offset += Vector3d(-moving_speed, 0, 0);
+	case 'a': {
+		camera_move_offset += Vector3d(moving_speed * sinf(camera.rotation.y), -moving_speed * cosf(camera.rotation.y), 0);
 		break;
 	}
 	case 's': {
-		camera_move_offset += Vector3d(moving_speed, 0, 0);
+		camera_move_offset += Vector3d(moving_speed * cosf(camera.rotation.y), moving_speed * sinf(camera.rotation.y), 0);
+		break;
+	}
+	case 'w': {
+		camera_move_offset += Vector3d(-moving_speed * cosf(camera.rotation.y), -moving_speed * sinf(camera.rotation.y), 0);
 		break;
 	}
 
@@ -176,11 +176,11 @@ void specialkey(int k, int x, int y)
 			camera_rotate_offset += Vector3d(-rotation_sensitity, 0, 0);
 			break;
 		}
-		case GLUT_KEY_LEFT: {
+		case GLUT_KEY_RIGHT: {
 			camera_rotate_offset += Vector3d(0, -rotation_sensitity, 0);
 			break;
 		}
-		case GLUT_KEY_RIGHT: {
+		case GLUT_KEY_LEFT: {
 			camera_rotate_offset += Vector3d(0, rotation_sensitity, 0);
 			break;
 		}

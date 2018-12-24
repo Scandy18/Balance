@@ -70,8 +70,7 @@ public:
 			target.x, target.y, target.z,
 			0, 0, 1);
 	}
-
-	/* 看向当前方向 */
+	/* 看向当前rotation方向 */
 	void CameraLookat()
 	{
 		Vector3d eu = RotationtoEuler(rotation);
@@ -88,7 +87,6 @@ public:
 		float fi = atanf(euler.y / euler.x);
 		return Vector3d(cita, fi, 1);
 	}
-
 	/* 球面坐标系转直角坐标系 */
 	Vector3d RotationtoEuler(Vector3d rot)
 	{
