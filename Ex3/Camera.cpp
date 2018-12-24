@@ -37,17 +37,25 @@ public:
 		rotation = rot;
 	}
 
-	/* 锁定某个目标 */
-	void lockObject(Vector3d target)
+	/* 通过目标获得朝向 */
+	void getTarget(Vector3d target)
 	{
 		Vector3d rot = EulertoRotation(target - position);
 		rot.z = 1;
 		rotation = rot;
 	}
 
+	/* 相机位置移动 */
 	void CameraMove(Vector3d offset)
 	{
 		position += offset;
+	}
+
+	/* 相机旋转 */
+	void CameraRotate(Vector3d offset)
+	{
+		rotation += offset;
+		rotation.z = 1;
 	}
 
 	/* 看向某个坐标 */
@@ -60,7 +68,7 @@ public:
 		/* lookat target */
 		gluLookAt(position.x, position.y, position.z,
 			target.x, target.y, target.z,
-			0, 1, 0);
+			0, 0, 1);
 	}
 
 	/* 看向当前方向 */
@@ -69,7 +77,7 @@ public:
 		Vector3d eu = RotationtoEuler(rotation);
 		gluLookAt(position.x, position.y, position.z,
 			position.x + eu.x, position.y + eu.y, position.z + eu.z,
-			0, 1, 0);
+			0, 0, 1);
 	}
 
 	/* 直角坐标系转球面坐标系 */

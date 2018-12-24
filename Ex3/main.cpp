@@ -4,15 +4,11 @@
 #include "Camera.cpp"
 #include "Vector3d.hpp"
 
-Camera camera = Camera(Vector3d(0, 2, 8), Vector3d(7 * PI / 8, -PI / 2, 1));
-Vector3d offset = Vector3d(0, 0, 0);
-float moving_speed = 0.03;
-
-float fTranslate;
-float fRotate    = 0.0f;
-float fScale     = 1.0f;	// set inital scale value to 1.0f
-
-bool bAnim = false;
+Camera camera = Camera(Vector3d(0, -4, 4), Vector3d(-5 * PI / 8, 0, 1));
+Vector3d camera_move_offset = Vector3d(0, 0, 0);
+Vector3d camera_rotate_offset = Vector3d(0, 0, 0);
+float moving_speed = 0.01f;
+float rotation_sensitity = 0.01f;
 
 int wHeight = 0;
 int wWidth = 0;
@@ -32,7 +28,7 @@ void Draw_Scene()
 {
 	glPushMatrix();
 	glTranslatef(0 + pot_x_off, 0 + pot_y_off, 4 + 1);
-	glRotatef(90, 1, 0, 0); //notice the rotation here, you may have a TRY removing this line to see what it looks like.
+	//glRotatef(90, 1, 0, 0); //notice the rotation here, you may have a TRY removing this line to see what it looks like.
 	glutSolidTeapot(1);
 	glPopMatrix();
 
@@ -103,24 +99,22 @@ void key(unsigned char k, int x, int y)
 	case 27:
 	case 'q': {exit(0); break; }
 
-	case ' ': {bAnim = !bAnim; break;}
-
 	case 'a': {
-		offset += Vector3d(-moving_speed, 0, 0);
+		camera_move_offset += Vector3d(0, -moving_speed, 0);
 		break;
-			  }
+	}
 	case 'd': {
-		offset += Vector3d(moving_speed, 0, 0);
+		camera_move_offset += Vector3d(0, moving_speed, 0);
 		break;
-			  }
+	}
 	case 'w': {
-		offset += Vector3d(0, 0, -moving_speed);
+		camera_move_offset += Vector3d(-moving_speed, 0, 0);
 		break;
-			  }
+	}
 	case 's': {
-		offset += Vector3d(0, 0, moving_speed);
+		camera_move_offset += Vector3d(moving_speed, 0, 0);
 		break;
-			  }
+	}
 
 			  //²èºøÏà¹Ø²Ù×÷
 	case 'l': {//todo, hint:use the ARRAY that you defined, and notice the teapot can NOT be moved out the range of the table.
@@ -145,30 +139,80 @@ void key(unsigned char k, int x, int y)
 			  }
 	}
 }
+
 void keyup(unsigned char k, int x, int y)
 {
 	switch (k)
 	{
 		case 'a': {
-			offset = Vector3d(0, 0, 0);
+			camera_move_offset = Vector3d(0, 0, 0);
 			break;
 		}
 		case 'd': {
-			offset = Vector3d(0, 0, 0);
+			camera_move_offset = Vector3d(0, 0, 0);
 			break;
 		}
 		case 'w': {
-			offset = Vector3d(0, 0, 0);
+			camera_move_offset = Vector3d(0, 0, 0);
 			break;
 		}
 		case 's': {
-			offset = Vector3d(0, 0, 0);
+			camera_move_offset = Vector3d(0, 0, 0);
 			break;
 		}
 	}
 
 }
 
+void specialkey(int k, int x, int y)
+{
+	switch (k)
+	{
+		case GLUT_KEY_UP: {
+			camera_rotate_offset += Vector3d(rotation_sensitity, 0, 0);
+			break;
+		}
+		case GLUT_KEY_DOWN: {
+			camera_rotate_offset += Vector3d(-rotation_sensitity, 0, 0);
+			break;
+		}
+		case GLUT_KEY_LEFT: {
+			camera_rotate_offset += Vector3d(0, -rotation_sensitity, 0);
+			break;
+		}
+		case GLUT_KEY_RIGHT: {
+			camera_rotate_offset += Vector3d(0, rotation_sensitity, 0);
+			break;
+		}
+	}
+}
+void specialkeyup(int k, int x, int y)
+{
+	switch (k)
+	{
+	case GLUT_KEY_UP: {
+		camera_rotate_offset = Vector3d(0, 0, 0);
+		break;
+	}
+	case GLUT_KEY_DOWN: {
+		camera_rotate_offset = Vector3d(0, 0, 0);
+		break;
+	}
+	case GLUT_KEY_LEFT: {
+		camera_rotate_offset = Vector3d(0, 0, 0);
+		break;
+	}
+	case GLUT_KEY_RIGHT: {
+		camera_rotate_offset = Vector3d(0, 0, 0);
+		break;
+	}
+	}
+}
+
+void mousemove()
+{
+
+}
 
 void redraw()
 {
@@ -176,8 +220,10 @@ void redraw()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();									// Reset The Current Modelview Matrix
 
-	camera.CameraMove(offset);
-			
+	if(camera_move_offset.x || camera_move_offset.y || camera_move_offset.z)
+		camera.CameraMove(camera_move_offset);
+	if (camera_rotate_offset.x || camera_rotate_offset.y)
+		camera.CameraRotate(camera_rotate_offset);
 	camera.CameraLookat();
 	
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -191,12 +237,10 @@ void redraw()
 	glLightfv(GL_LIGHT0, GL_AMBIENT, white);
 	glEnable(GL_LIGHT0);
 
-	glRotatef(fRotate, 0, 1.0f, 0);			// Rotate around Y axis
-	glRotatef(-90, 1, 0, 0);
+	//glRotatef(-90, 1, 0, 0);
 	glScalef(0.2, 0.2, 0.2);
-	Draw_Scene();						// Draw Scene
 
-	if (bAnim) fRotate    += 0.5f;
+	Draw_Scene();						// Draw Scene
 
 	glutSwapBuffers();
 }
@@ -206,13 +250,15 @@ int main (int argc,  char *argv[])
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(480,480);
-	int windowHandle = glutCreateWindow("Simple Balance");
+	int windowHandle = glutCreateWindow("Simple Ballance");
 
 	glutIgnoreKeyRepeat(1);
 	glutDisplayFunc(redraw);
 	glutReshapeFunc(reshape);	
 	glutKeyboardFunc(key);
 	glutKeyboardUpFunc(keyup);
+	glutSpecialFunc(specialkey);
+	glutSpecialUpFunc(specialkeyup);
 
 	glutIdleFunc(idle);
 
