@@ -3,7 +3,8 @@
 #include "glut.h"
 
 #define PI 3.1415926
-
+#define CAM_LOW_BOUND (-11 * PI / 12)
+#define CAM_UP_BOUND (-1 * PI / 12)
 class Camera
 {
 private:

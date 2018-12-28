@@ -1,4 +1,4 @@
-﻿  Camera.cpp
-  main.cpp
-  正在生成代码...
+﻿  main.cpp
+d:\zjuclass\#计图\场景\ex3\ex3\main.cpp(292): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(208): note: 参见“fopen”的声明
   Ex3.vcxproj -> D:\ZJUClass\#计图\场景\Ex3\Debug\Ex3.exe
