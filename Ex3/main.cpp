@@ -1,6 +1,7 @@
 
 #include <stdlib.h>
 #include <cstring>
+#include "ObjLoader.hpp"
 #include "glut.h"
 #include "Camera.cpp"
 #include "Vector3d.hpp"
@@ -135,7 +136,7 @@ void key(unsigned char k, int x, int y)
 	case 'q': {exit(0); break; }
 
 	case 'd': {
-		camera_move_offset += Vector3d(-moving_speed * sinf(camera.rotation.y), moving_speed, 0);
+		camera_move_offset += Vector3d(-moving_speed * sinf(camera.rotation.y), moving_speed * cosf(camera.rotation.y), 0);
 		break;
 	}
 	case 'a': {
@@ -204,13 +205,11 @@ void specialkey(int k, int x, int y)
 	switch (k)
 	{
 		case GLUT_KEY_UP: {
-			if(camera.rotation.x < CAM_UP_BOUND)
-				camera_rotate_offset += Vector3d(rotation_sensitity, 0, 0);
+			camera_rotate_offset += Vector3d(rotation_sensitity, 0, 0);
 			break;
 		}
 		case GLUT_KEY_DOWN: {
-			if (camera.rotation.x > CAM_LOW_BOUND)
-				camera_rotate_offset += Vector3d(-rotation_sensitity, 0, 0);
+			camera_rotate_offset += Vector3d(-rotation_sensitity, 0, 0);
 			break;
 		}
 		case GLUT_KEY_RIGHT: {
@@ -260,8 +259,11 @@ void redraw()
 
 	if(camera_move_offset.x || camera_move_offset.y || camera_move_offset.z)
 		camera.CameraMove(camera_move_offset);
-	if (camera_rotate_offset.x || camera_rotate_offset.y)
+	if ((camera_rotate_offset.x || camera_rotate_offset.y) && camera.rotation.x >= CAM_LOW_BOUND && camera.rotation.x <= CAM_UP_BOUND) {
 		camera.CameraRotate(camera_rotate_offset);
+	}
+	if (camera.rotation.x < CAM_LOW_BOUND) camera.rotation.x += rotation_sensitity;
+	if (camera.rotation.x > CAM_UP_BOUND) camera.rotation.x -= rotation_sensitity;
 	camera.CameraLookat();
 	
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

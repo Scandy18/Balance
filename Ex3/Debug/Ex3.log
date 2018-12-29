@@ -1,4 +1,8 @@
 ﻿  main.cpp
-d:\zjuclass\#计图\场景\ex3\ex3\main.cpp(292): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+d:\zjuclass\#计图\场景\ex3\ex3\objloader.hpp(101): warning C4390: “;”: 找到空的受控语句；这是否是有意的?
+d:\zjuclass\#计图\场景\ex3\ex3\objloader.hpp(38): warning C4101: “z”: 未引用的局部变量
+d:\zjuclass\#计图\场景\ex3\ex3\objloader.hpp(122): warning C4018: “<”: 有符号/无符号不匹配
+d:\zjuclass\#计图\场景\ex3\ex3\objloader.hpp(133): warning C4018: “<”: 有符号/无符号不匹配
+d:\zjuclass\#计图\场景\ex3\ex3\main.cpp(295): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(208): note: 参见“fopen”的声明
   Ex3.vcxproj -> D:\ZJUClass\#计图\场景\Ex3\Debug\Ex3.exe
