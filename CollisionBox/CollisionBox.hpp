@@ -10,13 +10,13 @@ public:
 		Center = (max+min)/2;
 		Vector3d s = max-min;
 		if(s.x>=s.y&&s.x>=s.z)
-			side=s.x;
+			Side=s.x;
 		else if(s.y>=s.x&&s.y>=s.z)
-			side=s.y;
+			Side=s.y;
 		else if(s.z>=s.x&&s.z>=s.y)
-			side=s.z;
+			Side=s.z;
 	}
-	CollisionBox(Ventor3d c,float s){Center=c;Side=s;}
+	CollisionBox(Vector3d c,float s){Center=c;Side=s;}
 	~CollisionBox(){}
 
 	bool CollisionJudge(Vector3d center, float radius)

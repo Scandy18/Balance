@@ -13,7 +13,7 @@ public:
 
 	Face(vector<Vector3d> points,vector<Vector3d> normals, float f)
 	{
-		size = points.size;
+		size = points.size();
 		FrictionModule = f;
 		Vector3d ptemp(0, 0, 0);
 		Vector3d ntemp(0, 0, 0);
@@ -23,20 +23,20 @@ public:
 			ntemp += normals[i];
 			Point.push_back(points[i]);
 		}
-		CenterPoint = ptemp / 4;
-		NormalVector = ntemp / 4;
+		CenterPoint = ptemp / size;
+		NormalVector = ntemp / size;
 	}
 	~Face(){}
 
 	//judge the face is in the collisionbox or not
 	bool CenterJudge(CollisionBox box)
 	{
-		box.InBox(CenterPoint);
+		return box.InBox(CenterPoint);
 	}
 	//judge the face is in touch with the ball or not
 	bool NormalJudge(Vector3d center, float radius)
 	{
-		return (CenterPoint - center)*(CenterPoint - center) <= radius * radius + 0.01;
+		return (CenterPoint - center).GetModule() <= radius * radius + 0.01;
 	}
 	
 	float GetFrictionModule(){return FrictionModule;}

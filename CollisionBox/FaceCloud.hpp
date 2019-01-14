@@ -5,7 +5,8 @@ class FaceCloud
 {
 public:
 
-	static vector<Face*> AllFace;
+	//static vector<Face*> AllFace;
+	static FaceCloud* MaxFaceCloud;
 	Vector3d MaxPosition;
 	Vector3d MinPosition;
 
@@ -41,13 +42,13 @@ public:
 			{
 				for(int k=0;k<NumCloud;k++)
 				{
-					Vector3d NewCenter(box.GetCenter().x-ParentSide/2.0+i*NewSide/2.0,box.GetCenter().y-ParentSide/2.0+k*NewSide/2.0,box.GetCenter().z-ParentSide/2.0+k*NewSide/2.0);
-					CollisionBox t(NewCenter,newSide);
+					Vector3d NewCenter(box.GetCenter().x - ParentSide / 2.0 + NewSide / 2.0 + i * NewSide, box.GetCenter().y - ParentSide / 2.0 + NewSide / 2.0 + j * NewSide, box.GetCenter().z - ParentSide / 2.0 + NewSide / 2.0 + k * NewSide);
+					CollisionBox t(NewCenter,NewSide);
 					FaceCloud* NewCloud = new FaceCloud(true,t);
 					for(int m=0;m<FaceinCloud.size();m++)
 					{
 						if(FaceinCloud[m]->CenterJudge(t))
-							NewCloud.AddtoFaceinCloud(FaceinCloud[m]);
+							NewCloud->AddtoFaceinCloud(FaceinCloud[m]);
 					}
 					LastCloud.push_back(NewCloud);
 				}
@@ -59,7 +60,7 @@ public:
 	{
 		for (int i = 0;i < FaceinCloud.size();i++)
 			if (FaceinCloud[i]->NormalJudge(center, radius))
-				t.push_back(FaceinCloud[i]->NormalVector);
+				t.push_back(FaceinCloud[i]->GetNormalVector());
 	}
 	//get the collision facecloud in queue,and the smaller faceclouds in result
 	void FaceCloudJudge(queue<FaceCloud*> t,vector<FaceCloud*>result, Vector3d center, float radius)
@@ -84,9 +85,16 @@ public:
 		FaceinCloud.push_back(t);
 	}
 
+	void ClearFaceinCloud()
+	{
+		FaceinCloud.clear();
+	}
+
 private:
 	CollisionBox box;
 	bool isBaseLayer;
 	vector<Face*> FaceinCloud;
 	vector<FaceCloud*> LastCloud;
 };
+
+FaceCloud* FaceCloud::MaxFaceCloud = new FaceCloud();
