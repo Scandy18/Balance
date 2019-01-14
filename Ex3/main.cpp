@@ -1,5 +1,5 @@
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <cstring>
 #include "ObjLoader.hpp"
 #include "glut.h"
@@ -7,6 +7,12 @@
 #include "Vector3d.hpp"
 
 using std::string;
+
+std::string filePath = "total.obj";
+std::string SpherePath = "sphere.obj";
+
+ObjLoader objModel;
+ObjLoader objSphere;
 
 Camera camera = Camera(Vector3d(0, -2, 2), Vector3d(-5 * PI / 8, 0, 1));
 Vector3d camera_move_offset = Vector3d(0, 0, 0);
@@ -32,7 +38,7 @@ void Draw_Leg()
 void Draw_Scene()
 {
 
-	glPushMatrix();
+	/*glPushMatrix();
 	glTranslatef(0 + pot_x_off, 0 + pot_y_off, 4 + 1);
 	//glRotatef(90, 1, 0, 0); //notice the rotation here, you may have a TRY removing this line to see what it looks like.
 	glutSolidTeapot(1);
@@ -99,7 +105,29 @@ void Draw_Scene()
 	glTranslatef(0, 0, -1);
 	glScalef(100, 100, 1);
 	glutSolidCube(1.0);
+	glPopMatrix();*/
+
+	glColor3f(1.0, 1.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glTranslatef(0.0f, 0.0f, -20.0f);
+	glScalef(0.02f, 0.02f, 0.02f);
+
+	glPushMatrix();
+
+	glPushMatrix();
+	glScalef(0.05f, 0.05f, 0.05f);
+	//glTranslatef(Sx, Sy, Sz);
+	objSphere.ElementDraw();
 	glPopMatrix();
+
+	glTranslatef(-6, 0, 4);//new
+	glPushMatrix();
+	glScaled(60, 60, 60);
+	objModel.ElementDraw();
+	glPopMatrix();
+
 }
 
 void updateView(int width, int height)
@@ -353,6 +381,10 @@ int main (int argc,  char *argv[])
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(480,480);
 	int windowHandle = glutCreateWindow("Simple Ballance");
+
+	objModel = ObjLoader(filePath);
+	objSphere = ObjLoader(SpherePath);
+	FaceCloud::MaxFaceCloud->Insort(2);
 
 	desk_tex = load_texture("wood.bmp");
 	ground_tex = load_texture("ground.bmp");
