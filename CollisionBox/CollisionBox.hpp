@@ -5,6 +5,18 @@ class CollisionBox
 {
 public:
 	CollisionBox(){}
+	CollisionBox(Vector3d max,Vector3d min)
+	{
+		Center = (max+min)/2;
+		Vector3d s = max-min;
+		if(s.x>=s.y&&s.x>=s.z)
+			side=s.x;
+		else if(s.y>=s.x&&s.y>=s.z)
+			side=s.y;
+		else if(s.z>=s.x&&s.z>=s.y)
+			side=s.z;
+	}
+	CollisionBox(Ventor3d c,float s){Center=c;Side=s;}
 	~CollisionBox(){}
 
 	bool CollisionJudge(Vector3d center, float radius)
@@ -33,6 +45,8 @@ public:
 		return true;
 	}
 
+	float GetSide(){return Side;}
+	Vector3d GetCenter(){return Center;}
 private:
 	float Side;
 	Vector3d Center;

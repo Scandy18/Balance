@@ -11,8 +11,6 @@ class Face
 {
 public:
 
-	Vector3d NormalVector;
-
 	Face(vector<Vector3d> points,vector<Vector3d> normals, float f)
 	{
 		size = points.size;
@@ -40,10 +38,16 @@ public:
 	{
 		return (CenterPoint - center)*(CenterPoint - center) <= radius * radius + 0.01;
 	}
+	
+	float GetFrictionModule(){return FrictionModule;}
+	
+	Vector3d GetNormalVector(){return NormalVector;}
 protected:
 	
 	vector<Vector3d> Point;
 	Vector3d CenterPoint;
+	
+	Vector3d NormalVector;
 
 	float FrictionModule;
 	int size;

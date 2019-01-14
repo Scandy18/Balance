@@ -11,4 +11,8 @@ FaceCloud ：
 
   用来遍历这个面云所有的面，并将接触面的法向量压入t
 
+Face：
+  Vector3d GetNormalVector() 获取法向量
+  float GetFrictionModule() 获取摩擦系数
+
 （开局定义了最大面云 FaceCloud* maxcloud）
