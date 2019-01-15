@@ -1,0 +1,20 @@
+﻿  main.cpp
+e:\课程\图形学\objtest\objtest\face.hpp(39): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
+e:\课程\图形学\objtest\objtest\face.hpp(40): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
+e:\课程\图形学\objtest\objtest\facecloud.hpp(20): warning C4018: “<”: 有符号/无符号不匹配
+e:\课程\图形学\objtest\objtest\facecloud.hpp(35): warning C4244: “初始化”: 从“float”转换到“int”，可能丢失数据
+e:\课程\图形学\objtest\objtest\facecloud.hpp(36): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+e:\课程\图形学\objtest\objtest\facecloud.hpp(45): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+e:\课程\图形学\objtest\objtest\facecloud.hpp(72): warning C4018: “<”: 有符号/无符号不匹配
+e:\课程\图形学\objtest\objtest\facecloud.hpp(88): warning C4018: “<”: 有符号/无符号不匹配
+e:\课程\图形学\objtest\objtest\objloader.hpp(153): warning C4390: “;”: 找到空的受控语句；这是否是有意的?
+e:\课程\图形学\objtest\objtest\objloader.hpp(40): warning C4101: “z”: 未引用的局部变量
+e:\课程\图形学\objtest\objtest\objloader.hpp(174): warning C4018: “<”: 有符号/无符号不匹配
+e:\课程\图形学\objtest\objtest\objloader.hpp(185): warning C4018: “<”: 有符号/无符号不匹配
+e:\课程\图形学\objtest\objtest\main.cpp(173): warning C4018: “<”: 有符号/无符号不匹配
+e:\课程\图形学\objtest\objtest\main.cpp(204): warning C4018: “<”: 有符号/无符号不匹配
+e:\课程\图形学\objtest\objtest\main.cpp(206): warning C4018: “<”: 有符号/无符号不匹配
+e:\课程\图形学\objtest\objtest\main.cpp(217): warning C4018: “<”: 有符号/无符号不匹配
+e:\课程\图形学\objtest\objtest\main.cpp(245): warning C4018: “<”: 有符号/无符号不匹配
+e:\课程\图形学\objtest\objtest\main.cpp(262): warning C4018: “<”: 有符号/无符号不匹配
+  ObjTest.vcxproj -> E:\课程\图形学\ObjTest\Debug\ObjTest.exe
