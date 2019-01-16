@@ -156,11 +156,11 @@ public:
 	{
 		glEnableClientState(GL_VERTEX_ARRAY);//enable 顶点数组
 		glEnableClientState(GL_NORMAL_ARRAY);//enable 法向量数组
-											 //glEnableClientState(GL_TEXTURE_COORD_ARRAY);//enable 纹理数组
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);//enable 纹理数组
 
 		glVertexPointer(3, GL_FLOAT, 0, Vertices);//定义顶点信息映射到Vertices，一个坐标3个参数
 		glNormalPointer(GL_FLOAT, 0, Normal);//定义法向量信息映射到Normal，一个法向量默认3个参数
-											 //glTexCoordPointer(2, GL_FLOAT, 0, Texture);//定义纹理信息映射到Texture（这里不知道为什么加载不出）
+		glTexCoordPointer(2, GL_FLOAT, 0, Texture);//定义纹理信息映射到Texture（这里不知道为什么加载不出）
 
 		glDrawElements(GL_TRIANGLES, Nface_3, GL_UNSIGNED_INT, Vindex_3);//画三角形mesh网格
 

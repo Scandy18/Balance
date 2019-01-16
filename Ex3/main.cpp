@@ -44,7 +44,7 @@ void Draw_Scene()
 	glutSolidTeapot(1);
 	glPopMatrix();
 
-	glEnable(GL_TEXTURE_2D);
+	/*glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, desk_tex);
 	glBegin(GL_QUADS);
 	glTexCoord2d(0, 0);
@@ -56,7 +56,7 @@ void Draw_Scene()
 	glTexCoord2d(1, 0);
 	glVertex3f(10, 0, 0);
 	glEnd();
-	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_TEXTURE_2D);*/
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, ground_tex);
@@ -107,26 +107,31 @@ void Draw_Scene()
 	glutSolidCube(1.0);
 	glPopMatrix();
 
-	/*glColor3f(1.0, 1.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glTranslatef(0.0f, 0.0f, -20.0f);
-	glScalef(0.02f, 0.02f, 0.02f);
+	//glColor3f(1.0, 1.0, 1.0);
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glMatrixMode(GL_MODELVIEW);
+	//glLoadIdentity();
+	//glTranslatef(0.0f, 0.0f, -20.0f);
+	//glScalef(0.02f, 0.02f, 0.02f);
 
-	glPushMatrix();
 
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, desk_tex);
 	glPushMatrix();
+	glTranslatef(10, 0, 5);//new
 	glScalef(0.05f, 0.05f, 0.05f);
 	//glTranslatef(Sx, Sy, Sz);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	objSphere.ElementDraw();
 	glPopMatrix();
+	glDisable(GL_TEXTURE_2D);
+
 
 	glTranslatef(-6, 0, 4);//new
 	glPushMatrix();
 	glScaled(60, 60, 60);
 	objModel.ElementDraw();
-	glPopMatrix();*/
+	glPopMatrix();
 
 }
 
@@ -361,10 +366,10 @@ int load_texture(string filename)
 	glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture_id);
 	glBindTexture(GL_TEXTURE_2D, texture_id);
 	//材质模型不匹配策略
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	/*glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);*/
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
