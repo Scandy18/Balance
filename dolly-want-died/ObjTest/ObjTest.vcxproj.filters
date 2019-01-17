@@ -30,13 +30,10 @@
     <ClInclude Include="FaceCloud.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="QuadFace.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="TriangleFace.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Line.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ball.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

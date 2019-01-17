@@ -13,8 +13,8 @@
 #include"vector"
 //#pragma comment(lib, "glew32.lib")
 
-#define MaxVertex 80000
-#define MaxFace 30000
+#define MaxVertex 8000
+#define MaxFace 3000
 
 
 /*objÎÄ¼ş¿ÉÒÔÓÃ¼ÇÊÂ±¾´ò¿ª²é¿´ÄÚÈİ v¿ªÍ·ÊÇµã×ø±ê vt¿ªÍ·ÊÇÎÆÀíµÄuv×ø±ê vn¿ªÍ·ÊÇ¶¥µã·¨ÏòÁ¿ 
@@ -25,7 +25,8 @@ f¿ªÍ·ÊÇÃæ f 1/1/1 2/1/1 3/1/1 4/1/1 ±íÊ¾Õâ¸öÃæÓÉËÄ¸öµã¹¹³É Ã¿¸öµãµÄĞÅÏ¢£º×ø±êË÷Ò
 class ObjLoader {
 public:
 	ObjLoader(){}
-	ObjLoader(std::string filename)
+	//ObjLoader(std::string filename) { ObjLoader(filename,0.05); }
+	ObjLoader(std::string filename, float friction)
 	{
 		Nface_3 = 0;
 		Nface_4 = 0;
@@ -146,7 +147,7 @@ public:
 					for (int j = 0;j < 3;j++)
 						Vindex_3[Nface_3++] = temp[j];
 
-				Face* t = new Face(FacePoint, FaceNormal, 0.1);
+				Face* t = new Face(FacePoint, FaceNormal, friction);
 				FaceCloud::MaxFaceCloud->AddtoFaceinCloud(t);
 			}
 			//×¢ÊÍĞÅÏ¢

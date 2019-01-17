@@ -5,15 +5,12 @@
 #include"vector"
 #include"queue"
 
-#define Tolerate 0.001
+#define Tolerate 0.005
 #define MaxTolerate 2.0
 
 
 #define Pi 3.1415926
-#define AngleTolerate 0.1
-
-
-
+#define AngleTolerate 0.001
 
 using std::vector;
 using std::queue;

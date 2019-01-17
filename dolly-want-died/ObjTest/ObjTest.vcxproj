@@ -118,13 +118,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ball.hpp" />
     <ClInclude Include="CollisionBox.hpp" />
     <ClInclude Include="Face.hpp" />
     <ClInclude Include="FaceCloud.hpp" />
     <ClInclude Include="Line.hpp" />
     <ClInclude Include="ObjLoader.hpp" />
-    <ClInclude Include="QuadFace.hpp" />
-    <ClInclude Include="TriangleFace.hpp" />
     <ClInclude Include="Vector3d.hpp" />
   </ItemGroup>
   <ItemGroup>

@@ -38,12 +38,6 @@ public:
 		if (result.GetModule() >= radius - 0.03&&result.GetModule() <= radius + 0.03)
 			return true;
 		return false;
-
-
-		//Vector3d CenterPoint = (SidePoint[0] + SidePoint[1]) * 0.5;
-		//Vector3d t = CenterPoint - center;
-		//Vector3d s = SidePoint - center;
-		//if(t.GetModule()<radius*radius+tolerate||)
 	}
 private:
 	vector<Vector3d> SidePoint;

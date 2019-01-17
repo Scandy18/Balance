@@ -1,32 +1,39 @@
-#include"ObjLoader.hpp"
+#include"ball.hpp"
 #include<stdio.h>
 #include<stdlib.h>
 
+#define ModelSize 6
+
 //模型路径
-std::string filePath = "total_4.2.obj";
+std::string ObjPath[ModelSize] =
+{ 
+	"asset/s1/s1.obj",
+	"asset/s2/s2.obj",
+	"asset/s3/s3.obj",
+	"asset/s4/s4.obj",
+	"asset/s5/s5.obj",
+	"asset/s6/s6.obj"
+};
+
+std::string MtlPath[ModelSize] =
+{
+	"asset/s1/s1.mtl",
+	"asset/s2/s2.mtl",
+	"asset/s3/s3.mtl",
+	"asset/s4/s4.mtl",
+	"asset/s5/s5.mtl",
+	"asset/s6/s6.mtl"
+};
+
 std::string SpherePath = "sphere_init.obj";
 
-ObjLoader objModel;
-ObjLoader objSphere;
-
-float Sx = 0;
-float Sy = 0;
-float Sz = 0;
-
-Vector3d center(0, 0.381, 4.7);
-//Vector3d offset(-0.2652, 0.2950, Sz);
-Vector3d offset(0, 1, 2);
-//Vector3d Goff(0.78, 0.78, 0.78);
-const float radius = 0.15;
-float stime = 1.0 / 600.0;
-Vector3d f(0, 0, 0);
-Vector3d a(0, 0, 0);
+float FrictionModule = 0.005;//通用摩擦系数 0.005还行
+float FrictionModule_Final = 0;//最后一段摩擦系数
+float stime = 1.0 / 1600.0;//时间片长度
+Vector3d offset(0, 1, -2);//小球初始位置
 Vector3d g(0, -9.8, 0);
-Vector3d v(0, 0, 0);
-Vector3d Nf(0, 0, 0);
-float fSet = 5;
-float M = 0.5;
-
+float fSet = 5;//给力大小
+float M = 0.5;//小球质量
 
 //实现移动鼠标观察模型所需变量
 static float c = 3.1415926 / 180.0f;
@@ -35,6 +42,20 @@ static int degree = 90;
 static int oldPosY = -1;
 static int oldPosX = -1;
 
+ObjLoader objSphere;
+
+vector<ObjLoader> objModel;
+
+ball HelloBall;
+
+Vector3d Nf(0, 0, 0);
+
+//重新开始函数
+void Reset()
+{
+	HelloBall.SetOffset(offset);
+	HelloBall.Init();
+}
 
 void getFPS()
 {
@@ -101,29 +122,21 @@ void display()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glTranslatef(0.0f, -1.0f, -12.0f);
-	glScalef(0.02f, 0.02f, 0.02f);
+	//glScalef(0.02f, 0.02f, 0.02f);
 	setLightRes();
 	glPushMatrix();
 
 	gluLookAt(r*cos(c*degree), 0, r*sin(c*degree), 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-	//gluLookAt(0, 1, -6, 0, 0, 0, 0, 0, 1);
+
+	HelloBall.Redraw();
+
 	glPushMatrix();
-	glScalef(60, 60, 60);
-	glTranslatef(offset.x / 1.2, offset.y / 1.2, offset.z / 1.2);
-	//glTranslatef(Sx, 10700, Sz);
-	objSphere.ElementDraw();
+	for (int i = 0;i < objModel.size();i++)
+	{
+		objModel[i].ElementDraw();
+	}
 	glPopMatrix();
-	//objModel.Draw();//绘制obj模型
-	//glCallList(objModel.ListNode);
-	//glTranslatef(-6, 0, 4);//new
-	glPushMatrix();
-	glScaled(60, 60, 60);
-	objModel.ElementDraw();
-	glPopMatrix();
-	//glTranslatef(Sx, Sy, Sz);
-	//glScaled(240, 240, 240);
-	
-	
+		
 	glPopMatrix();
 	
 	getFPS();
@@ -155,139 +168,10 @@ void changeViewPoint(int x, int y)
 	oldPosY = y;
 }
 
-void TouchGet()//获得接触面 所有法向量存放在NormalResult中
-{
-	Face::ChooseFace.clear();
-
-	queue<FaceCloud*> t;
-	vector<FaceCloud*> result;
-	vector<Vector3d> NormalResult;
-	t.push(FaceCloud::MaxFaceCloud);
-	while (t.size() != 0)
-	{
-		FaceCloud* m = t.front();
-		t.pop();
-		m->FaceCloudJudge(t, result, center+offset, radius);
-	}
-
-	for (int i = 0;i < result.size();i++)
-	{
-		FaceCloud* tCloud = result[i];
-		result[i]->FaceJudge(NormalResult, center+offset, radius);
-	}
-
-	/*for (int i = 0;i < FaceCloud::MaxFaceCloud->LastCloud.size();i++)
-	{
-		for (int j = 0;j < FaceCloud::MaxFaceCloud->LastCloud[i]->FaceinCloud.size();j++)
-		{
-			if (FaceCloud::MaxFaceCloud->LastCloud[i]->FaceinCloud[j]->NormalJudge(center + offset, radius))
-				NormalResult.push_back(FaceCloud::MaxFaceCloud->LastCloud[i]->FaceinCloud[j]->GetNormalVector());
-		}
-	}*/
-
-	f = Nf;
-
-	Vector3d Tvn(0, 0, 0);
-
-	/*for (int i = 0;i < NormalResult.size();i++)
-	{
-		Tvn = NormalResult[i].UnitVector() + Tvn;
-	}*/
-	vector<Vector3d> r;
-
-	if (NormalResult.size() != 0)
-		Tvn.x = 1;
-
-	if (NormalResult.size() == 0 && !v.isZero()&&Face::ChooseFace.size()!=0)
-	{
-		vector<Line*> AllLine;
-		for (int i = 0;i < Face::ChooseFace.size();i++)
-		{
-			for (int j = i;j < Face::ChooseFace.size();j++)
-			{
-				if (i == j)continue;
-				//vector<Vector3d> t;
-				Line* t = Face::ChooseFace[i]->GetLine(Face::ChooseFace[j]);
-				if(t!=NULL)
-					AllLine.push_back(t);
-			}
-		}
-		Vector3d TouchPoint;
-		Line* tLine = NULL;
-		for (int i = 0;i < AllLine.size();i++)
-		{
-			tLine = AllLine[i];
-			if (AllLine[i]->GetTouchPoint(TouchPoint, center+offset , radius))
-				break;
-		}
-		if (tLine == NULL)
-		{
-			f = g * M;
-			a = f / M;//牛二
-			offset = v * stime + offset;//位移
-			v = a * stime + v;//速度变化
-			return;
-		}
-		Vector3d fDirection = TouchPoint - center - offset;
-		fDirection = fDirection.UnitVector();
-		if(tLine->Direction.GetAngel(fDirection)<0)
-			f = (~fDirection) * (M * v.GetModule() / radius);
-		else
-			f = fDirection * (M * v.GetModule() / radius);
-		a = f / M;//牛二
-		offset = v * stime + offset;//位移
-		v = a * stime + v;//速度变化
-
-		printf("%f, %f, %f\n", offset.x, offset.y, offset.z);
-		return;
-	}
-
-	for (int i = 0;i < NormalResult.size();i++)
-	{
-		if (v.isZero())break;
-		Vector3d BackNormal = ~NormalResult[i];
-		//float vec = (BackNormal) % v;
-		float angle = BackNormal.GetAngel(v);
-		Vector3d t = BackNormal.UnitVector()*(!v)*angle;
-		Vector3d fri = v - t;
-		fri = (~fri.UnitVector())*0.01*((!v)*M / stime);
-		//f += fri;
-		t = t * 2 * 0.8;
-		r.push_back(t);
-		//v -= t;
-		//f = ((~v)*M / stime)+f;//动量
-		
-	}
-
-	for (int i = 0;i < r.size();i++)
-		v -= r[i];
-	/*if (Tvn.x != 0 || Tvn.y != 0 || Tvn.z != 0)
-	{
-		Vector3d BackNormal = ~Tvn;
-		//float vec = (BackNormal) % v;
-		float angle = BackNormal.GetAngel(v);
-		Vector3d ut = BackNormal.UnitVector()*(!v)*angle;
-		ut = ut * 2 * 0.8;
-		v -= ut;
-		//f = ((~v)*M / stime)+f;//动量
-	}*/
-
-	f = g * M + f;
-	if (f.x == 0 && f.y == 0 && f.z == 0) a = Vector3d(0, 0, 0);
-	else
-		a = f / M;//牛二
-	offset = v * stime + offset;//位移
-	v = a * stime + v;//速度变化
-	
-	printf("%f, %f, %f\n", offset.x, offset.y, offset.z);
-
-	if ((!v) > 100)
-		M = 0.5;
-}
-
 void myIdle()
 {
-	TouchGet();
+	//TouchGet();
+	HelloBall.GetFrame(Nf,stime);
 	glutPostRedisplay();
 	//printf("%d %d %d", Sx, Sy, Sz);
 }
@@ -305,10 +189,10 @@ void key(unsigned char k, int x, int y)
 void KeyUp(unsigned char k, int x, int y)
 {
 	switch (k) {
-	case'w':Nf = Vector3d(0, 0,  fSet) + Nf;break;
-	case's':Nf = Vector3d(0, 0, -fSet) + Nf;break;
-	case'a':Nf = Vector3d( fSet, 0, 0) + Nf;break;
-	case'd':Nf = Vector3d(-fSet, 0, 0) + Nf;break;
+	case'w':Nf.z = 0;break;
+	case's':Nf.z = 0;break;
+	case'a':Nf.x = 0;break;
+	case'd':Nf.x = 0;break;
 	}
 }
 
@@ -316,41 +200,21 @@ int main(int argc, char* argv[])
 {
 	glutInit(&argc, argv);
 	init();
-	objSphere = ObjLoader(SpherePath);
+
+	HelloBall = ball(Vector3d(0, 0.381, 4.7), offset, 0.15, SpherePath, M);
 	FaceCloud::MaxFaceCloud->ClearFaceinCloud();
-	objModel = ObjLoader(filePath);
+
+	for (int i = 0;i < ModelSize;i++)
+	{
+		if (i == 4)
+		{
+			objModel.push_back(ObjLoader(ObjPath[i], FrictionModule_Final));
+			continue;
+		}
+		objModel.push_back(ObjLoader(ObjPath[i], FrictionModule));
+	}
 	
 	FaceCloud::MaxFaceCloud->Insort(2);
-	/*queue<FaceCloud*> t;
-	vector<FaceCloud*> result;
-	vector<Vector3d> NormalResult;
-	t.push(FaceCloud::MaxFaceCloud);
-
-	FaceCloud::MaxFaceCloud->FaceCloudJudge(t, result, center, radius);
-
-	while (t.size() != 0)
-	{
-		FaceCloud* m = t.front();
-		t.pop();
-		m->FaceCloudJudge(t, result, center, radius);
-	}
-
-	for (int i = 0;i < result.size();i++)
-	{
-		FaceCloud* tCloud = result[i];
-		result[i]->FaceJudge(NormalResult, center, radius);
-	}*/
-
-	/*for (int i = 0;i < FaceCloud::MaxFaceCloud->LastCloud.size();i++)
-	{
-		for (int j = 0;j < FaceCloud::MaxFaceCloud->LastCloud[i]->FaceinCloud.size();j++)
-		{
-			if (FaceCloud::MaxFaceCloud->LastCloud[i]->FaceinCloud[j]->NormalJudge(center, radius))
-				printf("1\n");
-		}
-	}*/
-
-	
 	
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
