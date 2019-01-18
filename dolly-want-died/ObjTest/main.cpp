@@ -1,9 +1,11 @@
 #include"ball.hpp"
 #include<stdio.h>
 #include<stdlib.h>
+#include"time.h"
+#include"Windows.h"
 
 #define ModelSize 6
-
+using std::string;
 //模型路径
 std::string ObjPath[ModelSize] =
 { 
@@ -30,10 +32,26 @@ std::string SpherePath = "sphere_init.obj";
 float FrictionModule = 0.005;//通用摩擦系数 0.005还行
 float FrictionModule_Final = 0;//最后一段摩擦系数
 float stime = 1.0 / 1600.0;//时间片长度
-Vector3d offset(0, 1, -2);//小球初始位置
+Vector3d offset(0, 0.5, -2);//小球初始位置
 Vector3d g(0, -9.8, 0);
 float fSet = 5;//给力大小
 float M = 0.5;//小球质量
+float second = 0;//游戏时间
+
+int startTime;
+int nowTime = 0;
+int wHeight = 0;
+int wWidth = 0;
+
+//状态机
+bool isGameOver = false;
+bool isGameStart = false;
+bool isGameComplete = false;
+bool timer = false;
+
+//ui 贴图
+GLuint congrats;
+GLuint gameOver;
 
 //实现移动鼠标观察模型所需变量
 static float c = 3.1415926 / 180.0f;
@@ -50,11 +68,193 @@ ball HelloBall;
 
 Vector3d Nf(0, 0, 0);
 
+void _gameStart() 
+{
+	isGameStart = true;
+	timer = true;
+	startTime = clock();
+}
+
+void _gameOver()
+{
+	startTime = 0;
+	isGameOver = true;
+	isGameComplete = false;
+	timer = false;
+}
+
+void _gameComplete()
+{
+	startTime = 0;
+	isGameComplete = true;
+	isGameOver = false;
+	timer = false;
+}
+
+void status(ball HelloBall)
+{
+	Vector3d position = HelloBall.GetCenter();
+	if (!isGameComplete && position.y <= -1.2)
+	{
+		_gameOver();
+	}
+	if (position.y == 0 && (position.x<5.3&&position.x>3.3) && (position.z<1 && position.z>-1))
+		_gameComplete();
+}
+
+
 //重新开始函数
 void Reset()
 {
 	HelloBall.SetOffset(offset);
 	HelloBall.Init();
+}
+
+BOOL WriteBitmapFile(char * filename, int width, int height, unsigned char * bitmapData)
+{
+	//填充BITMAPFILEHEADER
+	BITMAPFILEHEADER bitmapFileHeader;
+	memset(&bitmapFileHeader, 0, sizeof(BITMAPFILEHEADER));
+	bitmapFileHeader.bfSize = sizeof(BITMAPFILEHEADER);
+	bitmapFileHeader.bfType = 0x4d42;	//BM
+	bitmapFileHeader.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
+
+	//填充BITMAPINFOHEADER
+	BITMAPINFOHEADER bitmapInfoHeader;
+	memset(&bitmapInfoHeader, 0, sizeof(BITMAPINFOHEADER));
+	bitmapInfoHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bitmapInfoHeader.biWidth = width;
+	bitmapInfoHeader.biHeight = height;
+	bitmapInfoHeader.biPlanes = 1;
+	bitmapInfoHeader.biBitCount = 24;
+	bitmapInfoHeader.biCompression = BI_RGB;
+	bitmapInfoHeader.biSizeImage = width * abs(height) * 3;
+
+	//////////////////////////////////////////////////////////////////////////
+	FILE * filePtr;			//连接要保存的bitmap文件用
+	unsigned char tempRGB;	//临时色素
+	int imageIdx;
+
+	//交换R、B的像素位置,bitmap的文件放置的是BGR,内存的是RGB
+	for (imageIdx = 0; imageIdx < bitmapInfoHeader.biSizeImage; imageIdx += 3)
+	{
+		tempRGB = bitmapData[imageIdx];
+		bitmapData[imageIdx] = bitmapData[imageIdx + 2];
+		bitmapData[imageIdx + 2] = tempRGB;
+	}
+	errno_t err;
+	err = fopen_s(&filePtr,filename, "wb");
+	if (NULL == filePtr)
+	{
+		return FALSE;
+	}
+
+	fwrite(&bitmapFileHeader, sizeof(BITMAPFILEHEADER), 1, filePtr);
+
+	fwrite(&bitmapInfoHeader, sizeof(BITMAPINFOHEADER), 1, filePtr);
+
+	fwrite(bitmapData, bitmapInfoHeader.biSizeImage, 1, filePtr);
+
+	fclose(filePtr);
+	return TRUE;
+}
+
+//截图按序号保存
+void grab(int width, int height)
+{
+	static void* screenData;
+	RECT rc;
+	int len = width * height * 3;
+	screenData = malloc(len);
+	memset(screenData, 0, len);
+	glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, screenData);
+
+	char fileName;
+	int i = 1;
+	FILE * filePtr;
+	char a[] = ".bmp";
+	char b[10];
+	_itoa_s(i, b, 10);
+	strcat_s(b, a);
+	errno_t err;
+	err = fopen_s(&filePtr,b, "rb");
+	while (filePtr != NULL)
+	{
+		i += 1;
+		_itoa_s(i, b, 10);
+		strcat_s(b, a);
+		
+		err = fopen_s(&filePtr,b, "rb");
+	}
+
+
+	WriteBitmapFile(b, width, height, (unsigned char *)screenData);
+
+	free(screenData);
+}
+
+int load_texture(string filename)
+{
+	int t_width, t_height, t_bytes;
+	GLint last_texture_id = 0;
+	GLuint texture_id = 0;
+	GLubyte* pixels = 0;
+
+	errno_t err;
+	FILE *tf;
+	err= fopen_s(&tf,filename.c_str(), "rb");
+	if (tf == 0) return 0;
+
+	//读取BMP文件头部信息
+	fseek(tf, 0x0012, SEEK_SET);
+	fread(&t_width, 4, 1, tf);
+	fread(&t_height, 4, 1, tf);
+	fseek(tf, 54, SEEK_SET);//54是BMP文件头部长度
+
+	//计算总大小
+	int line_bytes = t_width * 3;//rgb
+	while (line_bytes % 4)
+		++line_bytes;
+	t_bytes = line_bytes * t_height;
+
+	//存储像素信息，即图片内容
+	pixels = (GLubyte*)malloc(t_bytes);
+	if (pixels == 0) {
+		fclose(tf);
+		return 0;
+	}
+	if (fread(pixels, t_bytes, 1, tf) <= 0) {
+		free(pixels);
+		fclose(tf);
+		return 0;
+	}
+
+	//分配一个纹理编号给该纹理
+	glGenTextures(1, &texture_id);
+
+	if (texture_id == 0) {
+		free(pixels);
+		fclose(tf);
+		return 0;
+	}
+
+	//绑定纹理
+	GLint lastTextureID = last_texture_id;
+	glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture_id);
+	glBindTexture(GL_TEXTURE_2D, texture_id);
+	//材质模型不匹配策略
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	/*glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);*/
+
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+	//载入纹理
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, t_width, t_height, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
+
+	free(pixels);
+	return texture_id;
 }
 
 void getFPS()
@@ -63,17 +263,23 @@ void getFPS()
 	static char buffer[256];
 
 	//char mode[64];
+	if (timer) {
+		nowTime = clock();
+		second = nowTime - startTime;
+		second /= 1000;
+	}
 
 	frame++;
 	time = glutGet(GLUT_ELAPSED_TIME);
 	//stime = time - timebase;
 	if (time - timebase > 1000) {
 		
-		sprintf_s(buffer, "FPS:%4.2f",
-			frame*1000.0 / (time - timebase));
+		sprintf_s(buffer, "FPS:%4.2f     Time:%4.2f",
+			frame*1000.0 / (time - timebase),second);
 		timebase = time;
 		frame = 0;
 	}
+
 
 	char *c;
 	glDisable(GL_DEPTH_TEST);
@@ -140,12 +346,49 @@ void display()
 	glPopMatrix();
 	
 	getFPS();
+	status(HelloBall);
+	if (isGameOver)
+	{
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, gameOver);
+
+		glBegin(GL_QUADS);
+		//glScalef(50.0f, 50.0f, 25.0f);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex3f(-2.4f, -1.0f, 8.0f);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex3f(2.4f, -1.0f, 8.0f);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex3f(2.4f, 3.0f, 8.0f);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex3f(-2.4f, 3.0f, 8.0f);
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+	}
+	if (!isGameOver && isGameComplete) {
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, congrats);
+		//glScalef(50.0f, 50.0f, 25.0f);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex3f(-2.4f, -1.0f, 8.0f);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex3f(2.4f, -1.0f, 8.0f);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex3f(2.4f, 3.0f, 8.0f);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex3f(-2.4f, 3.0f, 8.0f);
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+	}
 	glutSwapBuffers();
 	
 }
 
 void reshape(int width, int height)
 {
+	wHeight = height;
+	wWidth = width;
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -160,6 +403,7 @@ void moseMove(int button, int state, int x, int y)
 		oldPosX = x; oldPosY = y;
 	}
 }
+
 void changeViewPoint(int x, int y)
 {
 	int temp = x - oldPosX;
@@ -179,10 +423,37 @@ void myIdle()
 void key(unsigned char k, int x, int y)
 {
 	switch (k) {
-	case'w':Nf = Vector3d(0, 0, -fSet) + Nf;break;
-	case's':Nf = Vector3d(0, 0,  fSet) + Nf;break;
-	case'a':Nf = Vector3d(-fSet, 0, 0) + Nf;break;
-	case'd':Nf = Vector3d(+fSet, 0, 0) + Nf;break;
+	case'w': {
+		Nf = Vector3d(0, 0, -fSet) + Nf; 
+		_gameStart();
+		break;
+	}
+	case's': {
+		Nf = Vector3d(0, 0, fSet) + Nf;
+		_gameStart();
+		break;
+	}
+	case'a': {
+		Nf = Vector3d(-fSet, 0, 0) + Nf;
+		_gameStart();
+		break;
+	}
+	case'd': {
+		Nf = Vector3d(+fSet, 0, 0) + Nf;
+		_gameStart();
+		break;
+	}
+	case'p':grab(wWidth, wHeight); break;
+	case 'r': {//缺少摄像机位置初始化函数
+		startTime = 0;
+		isGameStart = false;
+		isGameComplete = false;
+		isGameOver = false;
+		timer = false;
+		second = 0;
+		Reset();
+		break;
+	}
 	}
 }
 
@@ -216,6 +487,9 @@ int main(int argc, char* argv[])
 	
 	FaceCloud::MaxFaceCloud->Insort(2);
 	
+	gameOver = load_texture("gameover.bmp");
+	congrats = load_texture("congrats.bmp");
+
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
 	glutMouseFunc(moseMove);
