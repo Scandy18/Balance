@@ -25,8 +25,9 @@ public:
 		float tsize = !t;
 		if (radius >= tsize)return true;
 		Vector3d near = t * ((tsize - radius) / tsize);
-		Vector3d tnear = Center + near;
-		if (tnear.x<Center.x - Side / 2 || tnear.x>Center.x + Side / 2 || tnear.y<Center.y - Side / 2 || tnear.y>Center.y + Side / 2 || tnear.z<Center.z - Side / 2 || tnear.z>Center.z + Side / 2)
+		Vector3d tnear = Center - near;//?
+		if (tnear.x<Center.x - Side / 2 || tnear.x>Center.x + Side / 2 || tnear.y<Center.y - Side / 2 ||
+			tnear.y>Center.y + Side / 2 || tnear.z<Center.z - Side / 2 || tnear.z>Center.z + Side / 2)
 			return false;
 		/*else
 		{

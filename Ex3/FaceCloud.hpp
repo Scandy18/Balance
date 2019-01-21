@@ -32,6 +32,7 @@ public:
 			float s = box.GetSide()/2;
 			
 		}*/
+		int size = FaceinCloud.size();
 		int NumCloud = box.GetSide()/(2*radius);
 		float NewSide = box.GetSide()/(1.0*NumCloud);
 		float ParentSide = box.GetSide();
@@ -45,25 +46,47 @@ public:
 					Vector3d NewCenter(box.GetCenter().x - ParentSide / 2.0 + NewSide / 2.0 + i * NewSide, box.GetCenter().y - ParentSide / 2.0 + NewSide / 2.0 + j * NewSide, box.GetCenter().z - ParentSide / 2.0 + NewSide / 2.0 + k * NewSide);
 					CollisionBox t(NewCenter,NewSide);
 					FaceCloud* NewCloud = new FaceCloud(true,t);
-					for(int m=0;m<FaceinCloud.size();m++)
+					NewCloud->MaxPosition = Vector3d(NewSide / 2.0, NewSide / 2.0, NewSide / 2.0)+ NewCenter;
+					NewCloud->MinPosition = Vector3d(-NewSide / 2.0, -NewSide / 2.0, -NewSide / 2.0) + NewCenter;
+					vector<Face*>::iterator it;
+					for (it = FaceinCloud.begin();it != FaceinCloud.end();)
+					{
+						if ((*it)->CenterJudge(t))
+						{
+							NewCloud->AddtoFaceinCloud(*it);
+							it = FaceinCloud.erase(it);
+						}
+						else
+							it++;
+					}
+					/*for(int m=0;m<FaceinCloud.size();m++)
 					{
 						if(FaceinCloud[m]->CenterJudge(t))
 							NewCloud->AddtoFaceinCloud(FaceinCloud[m]);
-					}
+					}*/
 					LastCloud.push_back(NewCloud);
+					if (NewCloud->FaceinCloud.size() > size / 2)
+					{
+						NewCloud->Insort(radius / 2);
+						NewCloud->SetBaseLayer(false);
+					}
+						
 				}
 			}
 		}
 	}
 	//traverse the face in the cloud and get the face in touch
-	void FaceJudge(vector<Vector3d> t, Vector3d center, float radius)
+	void FaceJudge(vector<Vector3d> &t,vector<float> &Friction, Vector3d center, float radius)
 	{
 		for (int i = 0;i < FaceinCloud.size();i++)
 			if (FaceinCloud[i]->NormalJudge(center, radius))
+			{
 				t.push_back(FaceinCloud[i]->GetNormalVector());
+				Friction.push_back(FaceinCloud[i]->GetFrictionModule());
+			}
 	}
 	//get the collision facecloud in queue,and the smaller faceclouds in result
-	void FaceCloudJudge(queue<FaceCloud*> t,vector<FaceCloud*>result, Vector3d center, float radius)
+	void FaceCloudJudge(queue<FaceCloud*> &t,vector<FaceCloud*> &result, Vector3d center, float radius)
 	{
 		if (isBaseLayer)
 		{
@@ -85,11 +108,25 @@ public:
 		FaceinCloud.push_back(t);
 	}
 
+	void RemoveFaceinCloud(vector<Face*>::iterator t)
+	{
+		FaceinCloud.erase(t);
+	}
+
+	void ClearFaceinCloud()
+	{
+		FaceinCloud.clear();
+	}
+
+	void SetBaseLayer(bool t) { isBaseLayer = t; }
+
+	vector<FaceCloud*> LastCloud;
+	vector<Face*> FaceinCloud;
+
 private:
 	CollisionBox box;
 	bool isBaseLayer;
-	vector<Face*> FaceinCloud;
-	vector<FaceCloud*> LastCloud;
+	
 };
 
 FaceCloud* FaceCloud::MaxFaceCloud = new FaceCloud();

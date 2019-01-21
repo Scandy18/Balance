@@ -1,29 +1,32 @@
 #pragma once
-#include"FaceCloud.hpp"
 #include"Vector3d.hpp"
+#include"FaceCloud.hpp"
 #include"sstream"
 #include"fstream"
 #include"iostream"
-
+//#include"gl/glew.h"
+//#include"gl/gl.h"
+//#include"gl/glu.h"
 #include "glut.h"
-#include "algorithm"
-#include "string"
-#include <vector>
+#include"algorithm"
+#include"string"
+#include"vector"
+#pragma comment(lib, "glut32.lib")
+
+#define MaxVertex 8000
+#define MaxFace 3000
 
 
-#define MaxVertex 80000
-#define MaxFace 30000
-
-
-/*obj文件可以用记事本打开查看内容 v开头是点坐标 vt开头是纹理的uv坐标 vn开头是顶点法向量
-f开头是面 f 1/1/1 2/1/1 3/1/1 4/1/1 表示这个面由四个点构成 每个点的信息：坐标索引/纹理索引/法向量索引
+/*obj文件可以用记事本打开查看内容 v开头是点坐标 vt开头是纹理的uv坐标 vn开头是顶点法向量 
+f开头是面 f 1/1/1 2/1/1 3/1/1 4/1/1 表示这个面由四个点构成 每个点的信息：坐标索引/纹理索引/法向量索引 
 索引是从1开始而不是0开始
 */
 
 class ObjLoader {
 public:
-	ObjLoader() {}
-	ObjLoader(std::string filename)
+	ObjLoader(){}
+	//ObjLoader(std::string filename) { ObjLoader(filename,0.05); }
+	ObjLoader(std::string filename, float friction)
 	{
 		Nface_3 = 0;
 		Nface_4 = 0;
@@ -70,7 +73,7 @@ public:
 				std::string l = line.substr(2);
 				replace(l.begin(), l.end(), '/', ' ');//因为istringstream只能以空格为分隔符，所以/转化为空格
 				int u, v, w;
-
+				
 				std::istringstream vtns(l);
 
 				std::vector<Vector3d> FacePoint;
@@ -116,7 +119,7 @@ public:
 				{
 					while (vtns >> u)
 					{
-						vtns >> v;
+						vtns >> v; 
 						vtns >> w;
 						std::vector<int> vIndexSets;
 						vIndexSets.push_back(u - 1);
@@ -144,7 +147,7 @@ public:
 					for (int j = 0;j < 3;j++)
 						Vindex_3[Nface_3++] = temp[j];
 
-				Face* t = new Face(FacePoint, FaceNormal, 0.1);
+				Face* t = new Face(FacePoint, FaceNormal, friction);
 				FaceCloud::MaxFaceCloud->AddtoFaceinCloud(t);
 			}
 			//注释信息
@@ -156,11 +159,11 @@ public:
 	{
 		glEnableClientState(GL_VERTEX_ARRAY);//enable 顶点数组
 		glEnableClientState(GL_NORMAL_ARRAY);//enable 法向量数组
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);//enable 纹理数组
+		//glEnableClientState(GL_TEXTURE_COORD_ARRAY);//enable 纹理数组
 
 		glVertexPointer(3, GL_FLOAT, 0, Vertices);//定义顶点信息映射到Vertices，一个坐标3个参数
 		glNormalPointer(GL_FLOAT, 0, Normal);//定义法向量信息映射到Normal，一个法向量默认3个参数
-		glTexCoordPointer(2, GL_FLOAT, 0, Texture);//定义纹理信息映射到Texture（这里不知道为什么加载不出）
+		//glTexCoordPointer(2, GL_FLOAT, 0, Texture);//定义纹理信息映射到Texture（这里不知道为什么加载不出）
 
 		glDrawElements(GL_TRIANGLES, Nface_3, GL_UNSIGNED_INT, Vindex_3);//画三角形mesh网格
 
@@ -169,7 +172,7 @@ public:
 	//低帧 过时
 	void Draw()
 	{
-		for (int i = 0; i < fSets.size(); i++)
+		for (int i = 0; i < fSets.size(); i++) 
 		{
 			Vector3d Vertex[4];//存储不超过4个顶点的位置信息
 			Vector3d Texture[4];//存储每个顶点的纹理信息
@@ -184,7 +187,7 @@ public:
 			{
 				Index[j] = j;
 				Vertex[j] = vSets[fSets[i][j][0]];//存取顶点信息
-				Vers[3 * j] = Vertex[j].x;
+				Vers[3*j] = Vertex[j].x;
 				Vers[3 * j + 1] = Vertex[j].y;
 				Vers[3 * j + 2] = Vertex[j].z;
 				Texture[j] = vtSets[fSets[i][j][1]];//存取纹理信息
@@ -223,7 +226,7 @@ public:
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject_4);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, Nface_4 * sizeof(GLuint), Vindex_4, GL_STATIC_DRAW);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);*/
+	    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);*/
 	}
 
 	void vboDraw()
@@ -241,15 +244,15 @@ private:
 	std::vector<Vector3d>vnSets;//顶点法向量
 	std::vector<std::vector<std::vector<int>>>fSets;//内测为3个索引集合 一共有3个或4个点构成mesh网格 这些点的集合
 
-	GLfloat Vertices[3 * MaxVertex];
+	GLfloat Vertices[3*MaxVertex];
 	int Nvertices;
-	GLuint Vindex_4[4 * MaxVertex];
+	GLuint Vindex_4[4*MaxVertex];
 	int Nface_4;
-	GLuint Vindex_3[3 * MaxVertex];
+	GLuint Vindex_3[3*MaxVertex];
 	int Nface_3;
 
-	GLfloat Normal[3 * MaxVertex];
-	GLfloat Texture[2 * MaxVertex];
+	GLfloat Normal[3*MaxVertex];
+	GLfloat Texture[2*MaxVertex];
 
 	//GLuint vertexBufferObject;
 	//GLuint indexBufferObject_3;

@@ -1,17 +1,29 @@
 ﻿  main.cpp
-d:\zjuclass\#计图\场景\ex3\ex3\face.hpp(26): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
-d:\zjuclass\#计图\场景\ex3\ex3\face.hpp(27): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
+d:\zjuclass\#计图\场景\ex3\ex3\face.hpp(36): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
+d:\zjuclass\#计图\场景\ex3\ex3\face.hpp(37): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
 d:\zjuclass\#计图\场景\ex3\ex3\facecloud.hpp(20): warning C4018: “<”: 有符号/无符号不匹配
-d:\zjuclass\#计图\场景\ex3\ex3\facecloud.hpp(35): warning C4244: “初始化”: 从“float”转换到“int”，可能丢失数据
-d:\zjuclass\#计图\场景\ex3\ex3\facecloud.hpp(36): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-d:\zjuclass\#计图\场景\ex3\ex3\facecloud.hpp(45): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
-d:\zjuclass\#计图\场景\ex3\ex3\facecloud.hpp(48): warning C4018: “<”: 有符号/无符号不匹配
-d:\zjuclass\#计图\场景\ex3\ex3\facecloud.hpp(61): warning C4018: “<”: 有符号/无符号不匹配
-d:\zjuclass\#计图\场景\ex3\ex3\facecloud.hpp(77): warning C4018: “<”: 有符号/无符号不匹配
-d:\zjuclass\#计图\场景\ex3\ex3\objloader.hpp(151): warning C4390: “;”: 找到空的受控语句；这是否是有意的?
-d:\zjuclass\#计图\场景\ex3\ex3\objloader.hpp(38): warning C4101: “z”: 未引用的局部变量
-d:\zjuclass\#计图\场景\ex3\ex3\objloader.hpp(172): warning C4018: “<”: 有符号/无符号不匹配
-d:\zjuclass\#计图\场景\ex3\ex3\objloader.hpp(183): warning C4018: “<”: 有符号/无符号不匹配
-d:\zjuclass\#计图\场景\ex3\ex3\main.cpp(328): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+d:\zjuclass\#计图\场景\ex3\ex3\facecloud.hpp(36): warning C4244: “初始化”: 从“float”转换到“int”，可能丢失数据
+d:\zjuclass\#计图\场景\ex3\ex3\facecloud.hpp(37): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+d:\zjuclass\#计图\场景\ex3\ex3\facecloud.hpp(46): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+d:\zjuclass\#计图\场景\ex3\ex3\facecloud.hpp(49): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+d:\zjuclass\#计图\场景\ex3\ex3\facecloud.hpp(50): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+d:\zjuclass\#计图\场景\ex3\ex3\facecloud.hpp(68): warning C4018: “>”: 有符号/无符号不匹配
+d:\zjuclass\#计图\场景\ex3\ex3\facecloud.hpp(81): warning C4018: “<”: 有符号/无符号不匹配
+d:\zjuclass\#计图\场景\ex3\ex3\facecloud.hpp(100): warning C4018: “<”: 有符号/无符号不匹配
+d:\zjuclass\#计图\场景\ex3\ex3\objloader.hpp(154): warning C4390: “;”: 找到空的受控语句；这是否是有意的?
+d:\zjuclass\#计图\场景\ex3\ex3\objloader.hpp(41): warning C4101: “z”: 未引用的局部变量
+d:\zjuclass\#计图\场景\ex3\ex3\objloader.hpp(175): warning C4018: “<”: 有符号/无符号不匹配
+d:\zjuclass\#计图\场景\ex3\ex3\objloader.hpp(186): warning C4018: “<”: 有符号/无符号不匹配
+d:\zjuclass\#计图\场景\ex3\ex3\ball.hpp(38): warning C4018: “<”: 有符号/无符号不匹配
+d:\zjuclass\#计图\场景\ex3\ex3\ball.hpp(56): warning C4018: “<”: 有符号/无符号不匹配
+d:\zjuclass\#计图\场景\ex3\ex3\ball.hpp(58): warning C4018: “<”: 有符号/无符号不匹配
+d:\zjuclass\#计图\场景\ex3\ex3\ball.hpp(69): warning C4018: “<”: 有符号/无符号不匹配
+d:\zjuclass\#计图\场景\ex3\ex3\ball.hpp(97): warning C4018: “<”: 有符号/无符号不匹配
+d:\zjuclass\#计图\场景\ex3\ex3\ball.hpp(114): warning C4018: “<”: 有符号/无符号不匹配
+d:\zjuclass\#计图\场景\ex3\ex3\main.cpp(148): warning C4018: “<”: 有符号/无符号不匹配
+d:\zjuclass\#计图\场景\ex3\ex3\main.cpp(181): warning C4101: “fileName”: 未引用的局部变量
+d:\zjuclass\#计图\场景\ex3\ex3\main.cpp(175): warning C4101: “rc”: 未引用的局部变量
+d:\zjuclass\#计图\场景\ex3\ex3\main.cpp(210): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(208): note: 参见“fopen”的声明
+d:\zjuclass\#计图\场景\ex3\ex3\main.cpp(557): warning C4018: “<”: 有符号/无符号不匹配
   Ex3.vcxproj -> D:\ZJUClass\#计图\场景\Ex3\Debug\Ex3.exe
