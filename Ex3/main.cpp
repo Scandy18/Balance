@@ -33,7 +33,7 @@ std::string SpherePath = "sphere_init.obj";
 //ObjLoader objSphere;
 
 Camera camera = Camera(Vector3d(0, -6, 2), Vector3d(-13 * PI / 16, - PI / 2, 1));
-Vector3d camera_move_offset = Vector3d(0, 0, 0);
+Vector3d camera_move_offset = Vector3d(0, 0, -3);
 Vector3d camera_rotate_offset = Vector3d(0, 0, 0);
 Vector3d camera_relative_pos = Vector3d(0, -4, -2);
 float moving_speed = 0.01f;
@@ -42,7 +42,7 @@ float rotation_sensitity = 0.003f;
 float FrictionModule = 0.005;//通用摩擦系数 0.005还行
 float FrictionModule_Final = 0;//最后一段摩擦系数
 float stime = 1.0 / 1600.0;//时间片长度
-Vector3d offset(0, 0.5, -2);//小球初始位置
+Vector3d offset(4.3, 0.5, -11);//小球初始位置
 Vector3d g(0, -9.8, 0);
 float fSet = 5;//给力大小
 float M = 0.5;//小球质量
@@ -120,12 +120,12 @@ void _gameComplete()
 
 void status(ball HelloBall)
 {
-	Vector3d position = HelloBall.GetCenter();
-	if (!isGameComplete && position.y <= -1.2)
+	Vector3d position = HelloBall.GetOffset();
+	if (!isGameComplete && (position.y <= -1.2||position.y>=5))
 	{
 		_gameOver();
 	}
-	if (position.y > 0.3 && position.y <0.4 && (position.x<5.3&&position.x>3.3) && (position.z<1 && position.z>-1))
+	if (fabs(position.y) <= 0.05 && (position.x<5.3&&position.x>3.3) && (position.z<-3 && position.z>-5))
 		_gameComplete();
 }
 
@@ -475,7 +475,7 @@ void reshape(int width, int height)
 	}
 	wHeight = height;
 	wWidth = width;
-	updateView(wHeight, wWidth);
+	updateView(wWidth, wHeight);
 }
 
 void idle()
@@ -506,31 +506,49 @@ void key(unsigned char k, int x, int y)
 	case 'd': {
 		//camera_move_offset += Vector3d(-moving_speed * sinf(camera.rotation.y), moving_speed * cosf(camera.rotation.y), 0);
 		Nf = Vector3d(+fSet, 0, 0) + Nf;
-		//_gameStart();
+		if (!isGameStart) {
+			_gameStart();
+		}
 		break;
 	}
 	case 'a': {
 		//camera_move_offset += Vector3d(moving_speed * sinf(camera.rotation.y), -moving_speed * cosf(camera.rotation.y), 0);
 		Nf = Vector3d(-fSet, 0, 0) + Nf;
-		//_gameStart();
+		if (!isGameStart) {
+			_gameStart();
+		}
 		break;
 	}
 	case 's': {
 		//camera_move_offset += Vector3d(moving_speed * cosf(camera.rotation.y), moving_speed * sinf(camera.rotation.y), 0);
 		Nf = Vector3d(0, 0, fSet) + Nf;
-		//_gameStart();
+		if (!isGameStart) {
+			_gameStart();
+		}
 		break;
 	}
 	case 'w': {
 		//camera_move_offset += Vector3d(-moving_speed * cosf(camera.rotation.y), -moving_speed * sinf(camera.rotation.y), 0);
 		Nf = Vector3d(0, 0, -fSet) + Nf;
-		//_gameStart(); 
+		if (!isGameStart) {
+			_gameStart();
+		}
 		break;
 	}
 	case ' ': {
 		_gameStart();
 	}
 	case'p':grab(wWidth, wHeight); break;
+	case 'r': {//缺少摄像机位置初始化函数
+		startTime = 0;
+		isGameStart = false;
+		isGameComplete = false;
+		isGameOver = false;
+		timer = false;
+		second = 0;
+		Reset();
+		break;
+	}
 	}
 }
 
