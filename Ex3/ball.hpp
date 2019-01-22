@@ -5,8 +5,12 @@
 #include "vector"
 #include "queue"
 
+#define MinRotate 0.6
+
 using std::vector;
 using std::queue;
+
+
 
 class ball
 {
@@ -16,7 +20,7 @@ public:
 	ball(Vector3d c, Vector3d o, float r, std::string p, float m1)
 	{
 		center = c;offset = o;radius = r;Path = p;m = m1;g = Vector3d(0, -9.8, 0);
-		objModel = ObjLoader(Path,0.005);
+		objModel = ObjLoader(Path,0.005);Rotate=0;
 	}
 
 	void GetFrame(Vector3d Nf, float stime)
@@ -119,9 +123,10 @@ public:
 		if (F.isZero()) a = Vector3d(0, 0, 0);
 		else
 			a = F / m;//牛二
+		//if (v.x<0.0001&&v.x>-0.0001) v.x = 0;
 		offset = v * stime + offset;//位移
 		v = a * stime + v;//速度变化
-
+		//if (v.x<0.0001&&v.x>-0.0001) v.x = 0;
 		printf("%f, %f, %f\n", offset.x, offset.y, offset.z);
 
 	}
@@ -129,7 +134,21 @@ public:
 	void Redraw()
 	{
 		glPushMatrix();
+		//glRotatef(-90, 1, 0, 0);
+		//glTranslatef(-center.x, -center.y, -center.z);
+		Vector3d Trotate = v ^ Vector3d(0, 0, 1);
+		if (v.x<0.0001&&v.x>-0.0001) v.x = 0.0;
+		float t = !v * 0.3;
+		if (t < MinRotate);
+		else
+			Rotate += t;
+		if (Rotate > 360)Rotate -= 360;
+		//glRotatef(90, 1, 0, 0);
+		//glTranslatef(center.x, center.y, center.z);
 		glTranslatef(offset.x, offset.y, offset.z);
+		glTranslatef(center.x, center.y, center.z);
+		glRotatef(Rotate , Trotate.x, Trotate.y, Trotate.z);
+		glTranslatef(-center.x, -center.y, -center.z);
 		objModel.ElementDraw();
 		glPopMatrix();
 	}
@@ -147,6 +166,7 @@ private:
 	Vector3d offset;
 
 	float radius;
+	float Rotate;
 
 	Vector3d a;
 	Vector3d v;

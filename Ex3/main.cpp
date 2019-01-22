@@ -12,6 +12,7 @@
 #include "ball.hpp"
 
 #define ModelSize 6
+#define StatusLantency 50
 using std::string;
 using std::vector;
 
@@ -31,9 +32,10 @@ std::string SpherePath = "sphere_init.obj";
 //ObjLoader objModel;
 //ObjLoader objSphere;
 
-Camera camera = Camera(Vector3d(0, -2, 2), Vector3d(-5 * PI / 8, 0, 1));
+Camera camera = Camera(Vector3d(0, -5, 2), Vector3d(-13 * PI / 16, - PI / 2, 1));
 Vector3d camera_move_offset = Vector3d(0, 0, 0);
 Vector3d camera_rotate_offset = Vector3d(0, 0, 0);
+Vector3d camera_relative_pos = Vector3d(0, -4, -2);
 float moving_speed = 0.01f;
 float rotation_sensitity = 0.003f;
 
@@ -57,12 +59,15 @@ bool isGameStart = false;
 bool isGameComplete = false;
 bool timer = false;
 
-GLuint desk_tex;
-GLuint ground_tex;
+int FrameCount = 0;//帧数计数器
+
 
 //ui 贴图
+GLuint sphere;
 GLuint congrats;
 GLuint gameOver;
+vector<GLuint> obj_tex;
+vector<GLuint> sky_tex;
 
 //实现移动鼠标观察模型所需变量
 static float c = 3.1415926 / 180.0f;
@@ -79,11 +84,21 @@ ball HelloBall;
 
 Vector3d Nf(0, 0, 0);
 
+//重新开始函数
+void Reset()
+{
+	HelloBall.SetOffset(offset);
+	HelloBall.Init();
+}
+
 void _gameStart()
 {
 	isGameStart = true;
+	isGameOver = false;
+	isGameComplete = false;
 	timer = true;
 	startTime = clock();
+	Reset();
 }
 
 void _gameOver()
@@ -109,14 +124,8 @@ void status(ball HelloBall)
 	{
 		_gameOver();
 	}
-	if (position.y == 0 && (position.x<5.3&&position.x>3.3) && (position.z<1 && position.z>-1))
+	if (position.y > 0.3 && position.y <0.4 && (position.x<5.3&&position.x>3.3) && (position.z<1 && position.z>-1))
 		_gameComplete();
-}
-//重新开始函数
-void Reset()
-{
-	HelloBall.SetOffset(offset);
-	HelloBall.Init();
 }
 
 BOOL WriteBitmapFile(char * filename, int width, int height, unsigned char * bitmapData)
@@ -334,7 +343,7 @@ void Draw_Scene()
 {
 
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, ground_tex);
+	//glBindTexture(GL_TEXTURE_2D, ground_tex);
 	glBegin(GL_QUADS);
 	glTexCoord2d(0, 0);
 	glVertex3f(-10, -10, 0);
@@ -426,6 +435,16 @@ void reshape(int width, int height)
 void idle()
 {
 	HelloBall.GetFrame(Nf, stime);
+	FrameCount++;
+	if (FrameCount > StatusLantency)
+	{
+		FrameCount = 0;
+		status(HelloBall);
+	}
+	//camera.setCameraPosition(HelloBall.GetCenter() + camera_relative_pos);
+	camera.position.x = HelloBall.GetCenter().x;
+	camera.position.y = -HelloBall.GetCenter().z - 1;
+	camera.position.z = HelloBall.GetCenter().y + 4;
 	glutPostRedisplay();
 }
 
@@ -437,44 +456,42 @@ void key(unsigned char k, int x, int y)
 	case 'q': {exit(0); break; }
 
 	case 'd': {
-		camera_move_offset += Vector3d(-moving_speed * sinf(camera.rotation.y), moving_speed * cosf(camera.rotation.y), 0);
+		//camera_move_offset += Vector3d(-moving_speed * sinf(camera.rotation.y), moving_speed * cosf(camera.rotation.y), 0);
+		Nf = Vector3d(+fSet, 0, 0) + Nf;
+		//_gameStart();
 		break;
 	}
 	case 'a': {
-		camera_move_offset += Vector3d(moving_speed * sinf(camera.rotation.y), -moving_speed * cosf(camera.rotation.y), 0);
+		//camera_move_offset += Vector3d(moving_speed * sinf(camera.rotation.y), -moving_speed * cosf(camera.rotation.y), 0);
+		Nf = Vector3d(-fSet, 0, 0) + Nf;
+		//_gameStart();
 		break;
 	}
 	case 's': {
-		camera_move_offset += Vector3d(moving_speed * cosf(camera.rotation.y), moving_speed * sinf(camera.rotation.y), 0);
+		//camera_move_offset += Vector3d(moving_speed * cosf(camera.rotation.y), moving_speed * sinf(camera.rotation.y), 0);
+		Nf = Vector3d(0, 0, fSet) + Nf;
+		//_gameStart();
 		break;
 	}
 	case 'w': {
-		camera_move_offset += Vector3d(-moving_speed * cosf(camera.rotation.y), -moving_speed * sinf(camera.rotation.y), 0);
+		//camera_move_offset += Vector3d(-moving_speed * cosf(camera.rotation.y), -moving_speed * sinf(camera.rotation.y), 0);
+		Nf = Vector3d(0, 0, -fSet) + Nf;
+		//_gameStart(); 
 		break;
+	}
+	case ' ': {
+		_gameStart();
 	}
 	}
 }
 
 void keyup(unsigned char k, int x, int y)
 {
-	switch (k)
-	{
-		case 'a': {
-			camera_move_offset = Vector3d(0, 0, 0);
-			break;
-		}
-		case 'd': {
-			camera_move_offset = Vector3d(0, 0, 0);
-			break;
-		}
-		case 'w': {
-			camera_move_offset = Vector3d(0, 0, 0);
-			break;
-		}
-		case 's': {
-			camera_move_offset = Vector3d(0, 0, 0);
-			break;
-		}
+	switch (k) {
+		case'w':Nf.z = 0; break;
+		case's':Nf.z = 0; break;
+		case'a':Nf.x = 0; break;
+		case'd':Nf.x = 0; break;
 	}
 
 }
@@ -552,19 +569,48 @@ void redraw()
 	camera.CameraLookat();
 
 	glPushMatrix();
-	//glTranslatef(0.0f, 0.0f, 2.0f);
 	glRotatef(90, 1, 0, 0);
 
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, sphere);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	HelloBall.Redraw();
+	glDisable(GL_TEXTURE_2D);
 
-	for (int i = 0; i < objModel.size(); i++)
-	{
-		objModel[i].ElementDraw();
-	}
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, obj_tex[0]);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	objModel[0].ElementDraw();
+	glDisable(GL_TEXTURE_2D);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, obj_tex[1]);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	objModel[1].ElementDraw();
+	glDisable(GL_TEXTURE_2D);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, obj_tex[2]);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	objModel[2].ElementDraw();
+	glDisable(GL_TEXTURE_2D);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, obj_tex[3]);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	objModel[3].ElementDraw();
+	glDisable(GL_TEXTURE_2D);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, obj_tex[4]);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	objModel[4].ElementDraw();
+	glDisable(GL_TEXTURE_2D);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, obj_tex[5]);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	objModel[5].ElementDraw();
+	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
 	//glPopMatrix();
 	getFPS();
-	status(HelloBall);
+	//status(HelloBall);
 	
 	if (isGameOver)
 	{
@@ -573,15 +619,19 @@ void redraw()
 
 		glBegin(GL_QUADS);
 		//glScalef(50.0f, 50.0f, 25.0f);
+
+		//glPushMatrix();
+		//glTranslatef(HelloBall.GetCenter().x, HelloBall.GetCenter().z, HelloBall.GetCenter().y);
 		glTexCoord2f(0.0f, 0.0f);
-		glVertex3f(-2.4f, -1.0f, 8.0f);
+		glVertex3f(HelloBall.GetCenter().x - 1.2f, - HelloBall.GetCenter().z - 1.0f, HelloBall.GetCenter().y - 1);
 		glTexCoord2f(1.0f, 0.0f);
-		glVertex3f(2.4f, -1.0f, 8.0f);
+		glVertex3f(HelloBall.GetCenter().x + 1.2f, - HelloBall.GetCenter().z - 1.0f, HelloBall.GetCenter().y - 1);
 		glTexCoord2f(1.0f, 1.0f);
-		glVertex3f(2.4f, 3.0f, 8.0f);
+		glVertex3f(HelloBall.GetCenter().x + 1.2f, - HelloBall.GetCenter().z + 1.0f, HelloBall.GetCenter().y - 1);
 		glTexCoord2f(0.0f, 1.0f);
-		glVertex3f(-2.4f, 3.0f, 8.0f);
+		glVertex3f(HelloBall.GetCenter().x - 1.2f, - HelloBall.GetCenter().z + 1.0f, HelloBall.GetCenter().y - 1);
 		glEnd();
+		//glPopMatrix();
 		glDisable(GL_TEXTURE_2D);
 	}
 	if (!isGameOver && isGameComplete) {
@@ -590,13 +640,13 @@ void redraw()
 		//glScalef(50.0f, 50.0f, 25.0f);
 		glBegin(GL_QUADS);
 		glTexCoord2f(0.0f, 0.0f);
-		glVertex3f(-2.4f, -1.0f, 8.0f);
+		glVertex3f(HelloBall.GetCenter().x - 1.2f, -HelloBall.GetCenter().z - 1.0f, HelloBall.GetCenter().y - 1);
 		glTexCoord2f(1.0f, 0.0f);
-		glVertex3f(2.4f, -1.0f, 8.0f);
+		glVertex3f(HelloBall.GetCenter().x + 1.2f, -HelloBall.GetCenter().z - 1.0f, HelloBall.GetCenter().y - 1);
 		glTexCoord2f(1.0f, 1.0f);
-		glVertex3f(2.4f, 3.0f, 8.0f);
+		glVertex3f(HelloBall.GetCenter().x + 1.2f, -HelloBall.GetCenter().z + 1.0f, HelloBall.GetCenter().y - 1);
 		glTexCoord2f(0.0f, 1.0f);
-		glVertex3f(-2.4f, 3.0f, 8.0f);
+		glVertex3f(HelloBall.GetCenter().x - 1.2f, -HelloBall.GetCenter().z + 1.0f, HelloBall.GetCenter().y - 1);
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
 	}
@@ -614,7 +664,7 @@ int main (int argc,  char *argv[])
 	glutInit(&argc, argv);
 	init();
 
-	HelloBall = ball(Vector3d(0, 0.381, 4.7), offset, 0.15, SpherePath, M);
+	HelloBall = ball(Vector3d(0, 0.37782, 4.7), offset, 0.15, SpherePath, M);
 	FaceCloud::MaxFaceCloud->ClearFaceinCloud();
 
 	for (int i = 0; i < ModelSize; i++)
@@ -629,11 +679,21 @@ int main (int argc,  char *argv[])
 
 	FaceCloud::MaxFaceCloud->Insort(2);
 
-	desk_tex = load_texture("wood.bmp");
-	ground_tex = load_texture("ground.bmp");
-
+	sphere = load_texture("wood.bmp");
 	gameOver = load_texture("gameover.bmp");
 	congrats = load_texture("congrats.bmp");
+	obj_tex.push_back(load_texture("asset/s1/wood.bmp"));
+	obj_tex.push_back(load_texture("asset/s2/timg.bmp"));
+	obj_tex.push_back(load_texture("asset/s3/timg.bmp"));
+	obj_tex.push_back(load_texture("asset/s4/color.bmp"));
+	obj_tex.push_back(load_texture("asset/s5/timg.bmp"));
+	obj_tex.push_back(load_texture("asset/s6/timg.bmp"));
+	sky_tex.push_back(load_texture("asset/Skybox/1.top.bmp"));
+	sky_tex.push_back(load_texture("asset/Skybox/1.bottom.bmp"));
+	sky_tex.push_back(load_texture("asset/Skybox/1.left.bmp"));
+	sky_tex.push_back(load_texture("asset/Skybox/1.right.bmp"));
+	sky_tex.push_back(load_texture("asset/Skybox/1.front.bmp"));
+	sky_tex.push_back(load_texture("asset/Skybox/1.back.bmp"));
 
 	glutIgnoreKeyRepeat(1);
 	glutDisplayFunc(redraw);
