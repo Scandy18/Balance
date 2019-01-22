@@ -26,7 +26,7 @@ std::string ObjPath[ModelSize] =
 	"asset/s6/s6.obj"
 };
 
-std::string SpherePath = "asset/sphere_init.obj";
+std::string SpherePath = "sphere_init.obj";
 
 //ObjLoader objModel;
 //ObjLoader objSphere;
