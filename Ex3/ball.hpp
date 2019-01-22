@@ -159,8 +159,6 @@ public:
 
 	Vector3d GetCenter() { return center + offset; }
 
-	Vector3d GetOffset() { return offset; }
-
 	float GetRadius() { return radius; }
 
 	void SetOffset(Vector3d n) { offset = n; }
