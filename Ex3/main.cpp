@@ -32,7 +32,7 @@ std::string SpherePath = "sphere_init.obj";
 //ObjLoader objModel;
 //ObjLoader objSphere;
 
-Camera camera = Camera(Vector3d(0, -5, 2), Vector3d(-13 * PI / 16, - PI / 2, 1));
+Camera camera = Camera(Vector3d(0, -6, 2), Vector3d(-13 * PI / 16, - PI / 2, 1));
 Vector3d camera_move_offset = Vector3d(0, 0, 0);
 Vector3d camera_rotate_offset = Vector3d(0, 0, 0);
 Vector3d camera_relative_pos = Vector3d(0, -4, -2);
@@ -57,6 +57,7 @@ int wWidth = 0;
 bool isGameOver = false;
 bool isGameStart = false;
 bool isGameComplete = false;
+bool isGamePause = false;
 bool timer = false;
 
 int FrameCount = 0;//帧数计数器
@@ -296,7 +297,9 @@ void getFPS()
 
 
 	char *c;
-	glDisable(GL_DEPTH_TEST);
+	//glDisable(GL_DEPTH_TEST);
+	glDisable(GL_LIGHTING);
+	glDisable(GL_TEXTURE_2D);
 	glMatrixMode(GL_PROJECTION);  // 选择投影矩阵
 	glPushMatrix();               // 保存原矩阵
 	glLoadIdentity();             // 装入单位矩阵
@@ -304,15 +307,19 @@ void getFPS()
 	glMatrixMode(GL_MODELVIEW);   // 选择Modelview矩阵
 	glPushMatrix();               // 保存原矩阵
 	glLoadIdentity();             // 装入单位矩阵
+	//glScalef(10, 10, 10);
+	glColor3f(1, 0, 0);
 	glRasterPos2f(10, 10);
 	for (c = buffer; *c != '\0'; c++) {
-		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
 	}
 	glMatrixMode(GL_PROJECTION);  // 选择投影矩阵
 	glPopMatrix();                // 重置为原保存矩阵
 	glMatrixMode(GL_MODELVIEW);   // 选择Modelview矩阵
 	glPopMatrix();                // 重置为原保存矩阵
-	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_LIGHTING);
+	//glEnable(GL_DEPTH_TEST);
 }
 
 //安置光源
@@ -342,51 +349,90 @@ void Draw_Leg()
 void Draw_Scene()
 {
 
+	//
+	//up
 	glEnable(GL_TEXTURE_2D);
-	//glBindTexture(GL_TEXTURE_2D, ground_tex);
+	glBindTexture(GL_TEXTURE_2D, sky_tex[0]);
 	glBegin(GL_QUADS);
+	glNormal3f(0, 0, -1);
 	glTexCoord2d(0, 0);
-	glVertex3f(-10, -10, 0);
+	glVertex3f(-300, 300, 300);
 	glTexCoord2d(0, 1);
-	glVertex3f(-10, 0, 0);
+	glVertex3f(-300, -300, 300);
 	glTexCoord2d(1, 1);
-	glVertex3f(0, 0, 0);
+	glVertex3f(300, -300, 300);
 	glTexCoord2d(1, 0);
-	glVertex3f(0, -10, 0);
+	glVertex3f(300, 300, 300);
 	glEnd();
+	//glDisable(GL_TEXTURE_2D);
+	//glEnable(GL_TEXTURE_2D);
+	//down
+	glBindTexture(GL_TEXTURE_2D, sky_tex[1]);
+	glBegin(GL_QUADS);
+	glNormal3f(0, 0, 1);
+	glTexCoord2d(0, 0);
+	glVertex3f(-300, -300, -300);
+	glTexCoord2d(0, 1);
+	glVertex3f(-300, 300, -300);
+	glTexCoord2d(1, 1);
+	glVertex3f(300, 300, -300);
+	glTexCoord2d(1, 0);
+	glVertex3f(300, -300, -300);
+	glEnd();
+	//left
+	glBindTexture(GL_TEXTURE_2D, sky_tex[2]);
+	glBegin(GL_QUADS);
+	glNormal3f(1, 0, 0);
+	glTexCoord2d(0, 0);
+	glVertex3f(-300, -300, -300);
+	glTexCoord2d(0, 1);
+	glVertex3f(-300, -300, 300);
+	glTexCoord2d(1, 1);
+	glVertex3f(-300, 300, 300);
+	glTexCoord2d(1, 0);
+	glVertex3f(-300, 300, -300);
+	glEnd();
+	//right
+	glBindTexture(GL_TEXTURE_2D, sky_tex[3]);
+	glBegin(GL_QUADS);
+	glNormal3f(-1, 0, 0);
+	glTexCoord2d(0, 0);
+	glVertex3f(300, 300, -300);
+	glTexCoord2d(0, 1);
+	glVertex3f(300, 300, 300);
+	glTexCoord2d(1, 1);
+	glVertex3f(300, -300, 300);
+	glTexCoord2d(1, 0);
+	glVertex3f(300, -300, -300);
+	glEnd();
+	//fornt
+	glBindTexture(GL_TEXTURE_2D, sky_tex[4]);
+	glBegin(GL_QUADS);
+	glNormal3f(0, -1, 0);
+	glTexCoord2d(0, 0);
+	glVertex3f(-300, 300, -300);
+	glTexCoord2d(0, 1);
+	glVertex3f(-300, 300, 300);
+	glTexCoord2d(1, 1);
+	glVertex3f(300, 300, 300);
+	glTexCoord2d(1, 0);
+	glVertex3f(300, 300, -300);
+	glEnd();
+	//back
+	glBindTexture(GL_TEXTURE_2D, sky_tex[5]);
+	glBegin(GL_QUADS);
+	glNormal3f(0, 1, 0);
+	glTexCoord2d(0, 0);
+	glVertex3f(-300, -300, -300);
+	glTexCoord2d(0, 1);
+	glVertex3f(-300, -300, 300);
+	glTexCoord2d(1, 1);
+	glVertex3f(300, -300, 300);
+	glTexCoord2d(1, 0);
+	glVertex3f(300, -300, -300);
+	glEnd();
+
 	glDisable(GL_TEXTURE_2D);
-
-	glPushMatrix();
-	glTranslatef(0, 0, 3.5);
-	glScalef(5, 4, 1);
-	glutSolidCube(1.0);
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(1.5, 1, 1.5);
-	Draw_Leg();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(-1.5, 1, 1.5);
-	Draw_Leg();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(1.5, -1, 1.5);
-	Draw_Leg();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(-1.5, -1, 1.5);
-	Draw_Leg();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(0, 0, -1);
-	glScalef(100, 100, 1);
-	glutSolidCube(1.0);
-	glPopMatrix();
 
 	//glColor3f(1.0, 1.0, 1.0);
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -434,7 +480,9 @@ void reshape(int width, int height)
 
 void idle()
 {
-	HelloBall.GetFrame(Nf, stime);
+	if (isGamePause || isGameOver ||isGameComplete || !isGameStart);
+	else
+		HelloBall.GetFrame(Nf, stime);
 	FrameCount++;
 	if (FrameCount > StatusLantency)
 	{
@@ -482,6 +530,7 @@ void key(unsigned char k, int x, int y)
 	case ' ': {
 		_gameStart();
 	}
+	case'p':grab(wWidth, wHeight); break;
 	}
 }
 
@@ -571,44 +620,41 @@ void redraw()
 	glPushMatrix();
 	glRotatef(90, 1, 0, 0);
 
+	//
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, sphere);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	HelloBall.Redraw();
-	glDisable(GL_TEXTURE_2D);
 
-	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, obj_tex[0]);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	objModel[0].ElementDraw();
-	glDisable(GL_TEXTURE_2D);
-	glEnable(GL_TEXTURE_2D);
+
 	glBindTexture(GL_TEXTURE_2D, obj_tex[1]);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	objModel[1].ElementDraw();
-	glDisable(GL_TEXTURE_2D);
-	glEnable(GL_TEXTURE_2D);
+
 	glBindTexture(GL_TEXTURE_2D, obj_tex[2]);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	objModel[2].ElementDraw();
-	glDisable(GL_TEXTURE_2D);
-	glEnable(GL_TEXTURE_2D);
+
 	glBindTexture(GL_TEXTURE_2D, obj_tex[3]);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	objModel[3].ElementDraw();
-	glDisable(GL_TEXTURE_2D);
-	glEnable(GL_TEXTURE_2D);
+
 	glBindTexture(GL_TEXTURE_2D, obj_tex[4]);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	objModel[4].ElementDraw();
-	glDisable(GL_TEXTURE_2D);
-	glEnable(GL_TEXTURE_2D);
+
 	glBindTexture(GL_TEXTURE_2D, obj_tex[5]);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	objModel[5].ElementDraw();
+
 	glDisable(GL_TEXTURE_2D);
+	
 	glPopMatrix();
 	//glPopMatrix();
+	glColor3f(0, 0, 1);
 	getFPS();
 	//status(HelloBall);
 	
@@ -622,14 +668,15 @@ void redraw()
 
 		//glPushMatrix();
 		//glTranslatef(HelloBall.GetCenter().x, HelloBall.GetCenter().z, HelloBall.GetCenter().y);
+		glNormal3f(0, 0, 1);
 		glTexCoord2f(0.0f, 0.0f);
-		glVertex3f(HelloBall.GetCenter().x - 1.2f, - HelloBall.GetCenter().z - 1.0f, HelloBall.GetCenter().y - 1);
+		glVertex3f(HelloBall.GetCenter().x - 2.4f, - HelloBall.GetCenter().z + 0.0f, HelloBall.GetCenter().y - 1.0f);
 		glTexCoord2f(1.0f, 0.0f);
-		glVertex3f(HelloBall.GetCenter().x + 1.2f, - HelloBall.GetCenter().z - 1.0f, HelloBall.GetCenter().y - 1);
+		glVertex3f(HelloBall.GetCenter().x + 2.4f, - HelloBall.GetCenter().z + 0.0f, HelloBall.GetCenter().y - 1.0f);
 		glTexCoord2f(1.0f, 1.0f);
-		glVertex3f(HelloBall.GetCenter().x + 1.2f, - HelloBall.GetCenter().z + 1.0f, HelloBall.GetCenter().y - 1);
+		glVertex3f(HelloBall.GetCenter().x + 2.4f, - HelloBall.GetCenter().z + 4.0f, HelloBall.GetCenter().y + 0.5f);
 		glTexCoord2f(0.0f, 1.0f);
-		glVertex3f(HelloBall.GetCenter().x - 1.2f, - HelloBall.GetCenter().z + 1.0f, HelloBall.GetCenter().y - 1);
+		glVertex3f(HelloBall.GetCenter().x - 2.4f, - HelloBall.GetCenter().z + 4.0f, HelloBall.GetCenter().y + 0.5f);
 		glEnd();
 		//glPopMatrix();
 		glDisable(GL_TEXTURE_2D);
@@ -639,20 +686,21 @@ void redraw()
 		glBindTexture(GL_TEXTURE_2D, congrats);
 		//glScalef(50.0f, 50.0f, 25.0f);
 		glBegin(GL_QUADS);
+		glNormal3f(0, 0, 1);
 		glTexCoord2f(0.0f, 0.0f);
-		glVertex3f(HelloBall.GetCenter().x - 1.2f, -HelloBall.GetCenter().z - 1.0f, HelloBall.GetCenter().y - 1);
+		glVertex3f(HelloBall.GetCenter().x - 2.4f, -HelloBall.GetCenter().z + 0.0f, HelloBall.GetCenter().y - 1.0f);
 		glTexCoord2f(1.0f, 0.0f);
-		glVertex3f(HelloBall.GetCenter().x + 1.2f, -HelloBall.GetCenter().z - 1.0f, HelloBall.GetCenter().y - 1);
+		glVertex3f(HelloBall.GetCenter().x + 2.4f, -HelloBall.GetCenter().z + 0.0f, HelloBall.GetCenter().y - 1.0f);
 		glTexCoord2f(1.0f, 1.0f);
-		glVertex3f(HelloBall.GetCenter().x + 1.2f, -HelloBall.GetCenter().z + 1.0f, HelloBall.GetCenter().y - 1);
+		glVertex3f(HelloBall.GetCenter().x + 2.4f, -HelloBall.GetCenter().z + 4.0f, HelloBall.GetCenter().y + 0.5f);
 		glTexCoord2f(0.0f, 1.0f);
-		glVertex3f(HelloBall.GetCenter().x - 1.2f, -HelloBall.GetCenter().z + 1.0f, HelloBall.GetCenter().y - 1);
+		glVertex3f(HelloBall.GetCenter().x - 2.4f, -HelloBall.GetCenter().z + 4.0f, HelloBall.GetCenter().y + 0.5f);
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
 	}
 	
 	glScalef(0.2, 0.2, 0.2);
-	//Draw_Scene();						// Draw Scene
+	Draw_Scene();						// Draw Scene
 
 	glutSwapBuffers();
 }
@@ -682,18 +730,20 @@ int main (int argc,  char *argv[])
 	sphere = load_texture("wood.bmp");
 	gameOver = load_texture("gameover.bmp");
 	congrats = load_texture("congrats.bmp");
+
 	obj_tex.push_back(load_texture("asset/s1/wood.bmp"));
 	obj_tex.push_back(load_texture("asset/s2/timg.bmp"));
 	obj_tex.push_back(load_texture("asset/s3/timg.bmp"));
 	obj_tex.push_back(load_texture("asset/s4/color.bmp"));
 	obj_tex.push_back(load_texture("asset/s5/timg.bmp"));
 	obj_tex.push_back(load_texture("asset/s6/timg.bmp"));
-	sky_tex.push_back(load_texture("asset/Skybox/1.top.bmp"));
-	sky_tex.push_back(load_texture("asset/Skybox/1.bottom.bmp"));
-	sky_tex.push_back(load_texture("asset/Skybox/1.left.bmp"));
-	sky_tex.push_back(load_texture("asset/Skybox/1.right.bmp"));
-	sky_tex.push_back(load_texture("asset/Skybox/1.front.bmp"));
-	sky_tex.push_back(load_texture("asset/Skybox/1.back.bmp"));
+
+	sky_tex.push_back(load_texture("asset/SkyBox/1.top.bmp"));
+	sky_tex.push_back(load_texture("asset/SkyBox/1.bottom.bmp"));
+	sky_tex.push_back(load_texture("asset/SkyBox/1.left.bmp"));
+	sky_tex.push_back(load_texture("asset/SkyBox/1.right.bmp"));
+	sky_tex.push_back(load_texture("asset/SkyBox/1.front.bmp"));
+	sky_tex.push_back(load_texture("asset/SkyBox/1.back.bmp"));
 
 	glutIgnoreKeyRepeat(1);
 	glutDisplayFunc(redraw);

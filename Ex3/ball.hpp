@@ -25,6 +25,10 @@ public:
 
 	void GetFrame(Vector3d Nf, float stime)
 	{
+		/*if (v.x<0.001&&v.x>-0.001)v.x = 0;
+		if (v.y<0.001&&v.y>-0.001)v.y = 0;
+		if (v.z<0.001&&v.z>-0.001)v.z = 0;*/
+
 		Face::ChooseFace.clear();
 
 		queue<FaceCloud*> t;//用于遍历所有面云

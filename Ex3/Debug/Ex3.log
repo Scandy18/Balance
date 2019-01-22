@@ -14,15 +14,15 @@ d:\zjuclass\#计图\场景\ex3\ex3\objloader.hpp(154): warning C4390: “;”: �
 d:\zjuclass\#计图\场景\ex3\ex3\objloader.hpp(41): warning C4101: “z”: 未引用的局部变量
 d:\zjuclass\#计图\场景\ex3\ex3\objloader.hpp(175): warning C4018: “<”: 有符号/无符号不匹配
 d:\zjuclass\#计图\场景\ex3\ex3\objloader.hpp(186): warning C4018: “<”: 有符号/无符号不匹配
-d:\zjuclass\#计图\场景\ex3\ex3\ball.hpp(42): warning C4018: “<”: 有符号/无符号不匹配
-d:\zjuclass\#计图\场景\ex3\ex3\ball.hpp(60): warning C4018: “<”: 有符号/无符号不匹配
-d:\zjuclass\#计图\场景\ex3\ex3\ball.hpp(62): warning C4018: “<”: 有符号/无符号不匹配
-d:\zjuclass\#计图\场景\ex3\ex3\ball.hpp(73): warning C4018: “<”: 有符号/无符号不匹配
-d:\zjuclass\#计图\场景\ex3\ex3\ball.hpp(101): warning C4018: “<”: 有符号/无符号不匹配
-d:\zjuclass\#计图\场景\ex3\ex3\ball.hpp(118): warning C4018: “<”: 有符号/无符号不匹配
-d:\zjuclass\#计图\场景\ex3\ex3\main.cpp(157): warning C4018: “<”: 有符号/无符号不匹配
-d:\zjuclass\#计图\场景\ex3\ex3\main.cpp(190): warning C4101: “fileName”: 未引用的局部变量
-d:\zjuclass\#计图\场景\ex3\ex3\main.cpp(184): warning C4101: “rc”: 未引用的局部变量
-d:\zjuclass\#计图\场景\ex3\ex3\main.cpp(219): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+d:\zjuclass\#计图\场景\ex3\ex3\ball.hpp(46): warning C4018: “<”: 有符号/无符号不匹配
+d:\zjuclass\#计图\场景\ex3\ex3\ball.hpp(64): warning C4018: “<”: 有符号/无符号不匹配
+d:\zjuclass\#计图\场景\ex3\ex3\ball.hpp(66): warning C4018: “<”: 有符号/无符号不匹配
+d:\zjuclass\#计图\场景\ex3\ex3\ball.hpp(77): warning C4018: “<”: 有符号/无符号不匹配
+d:\zjuclass\#计图\场景\ex3\ex3\ball.hpp(105): warning C4018: “<”: 有符号/无符号不匹配
+d:\zjuclass\#计图\场景\ex3\ex3\ball.hpp(122): warning C4018: “<”: 有符号/无符号不匹配
+d:\zjuclass\#计图\场景\ex3\ex3\main.cpp(158): warning C4018: “<”: 有符号/无符号不匹配
+d:\zjuclass\#计图\场景\ex3\ex3\main.cpp(191): warning C4101: “fileName”: 未引用的局部变量
+d:\zjuclass\#计图\场景\ex3\ex3\main.cpp(185): warning C4101: “rc”: 未引用的局部变量
+d:\zjuclass\#计图\场景\ex3\ex3\main.cpp(220): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(208): note: 参见“fopen”的声明
   Ex3.vcxproj -> D:\ZJUClass\#计图\场景\Ex3\Debug\Ex3.exe
