@@ -26,7 +26,7 @@ std::string ObjPath[ModelSize] =
 	"asset/s6/s6.obj"
 };
 
-std::string SpherePath = "sphere_init.obj";
+std::string SpherePath = "asset/sphere_init.obj";
 
 //ObjLoader objModel;
 //ObjLoader objSphere;
@@ -425,6 +425,7 @@ void reshape(int width, int height)
 
 void idle()
 {
+	HelloBall.GetFrame(Nf, stime);
 	glutPostRedisplay();
 }
 
@@ -549,11 +550,13 @@ void redraw()
 	if (camera.rotation.x < CAM_LOW_BOUND) camera.rotation.x += rotation_sensitity;
 	if (camera.rotation.x > CAM_UP_BOUND) camera.rotation.x -= rotation_sensitity;
 	camera.CameraLookat();
-	
-	HelloBall.Redraw();
 
 	glPushMatrix();
-	//glTranslatef(0.0f, 0.0f, 10.0f);
+	//glTranslatef(0.0f, 0.0f, 2.0f);
+	glRotatef(90, 1, 0, 0);
+
+	HelloBall.Redraw();
+
 	for (int i = 0; i < objModel.size(); i++)
 	{
 		objModel[i].ElementDraw();
@@ -562,7 +565,7 @@ void redraw()
 	//glPopMatrix();
 	getFPS();
 	status(HelloBall);
-	/*
+	
 	if (isGameOver)
 	{
 		glEnable(GL_TEXTURE_2D);
@@ -597,9 +600,9 @@ void redraw()
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
 	}
-	*/
+	
 	glScalef(0.2, 0.2, 0.2);
-	Draw_Scene();						// Draw Scene
+	//Draw_Scene();						// Draw Scene
 
 	glutSwapBuffers();
 }
